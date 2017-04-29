@@ -5,20 +5,36 @@
         <vendor name="${project.organization.name}" url="${project.organization.url}" />
         <param name="plugin-icon">images/pluginIcon.png</param>
         <param name="plugin-logo">images/pluginLogo.png</param>
+        <permissions>
+            <permission>execute_java</permission>
+        </permissions>
     </plugin-info>
 
+    <servlet name="Repository Servlet" key="repository-servlet"
+             class="org.ndrone.api.RepositoryConfigServlet">
+        <description key="repository-servlet.description">The Repository Servlet Plugin</description>
+        <url-pattern>/teamcity-trigger/repository/*</url-pattern>
+    </servlet>
+
     <!-- add our i18n resource -->
-    <resource type="i18n" name="i18n" location="bitbucket-teamcity-plugin"/>
+    <resource type="i18n" name="i18n" location="teamcity-trigger-plugin"/>
     
     <!-- add our web resources -->
-    <web-resource key="bitbucket-teamcity-plugin-resources" name="bitbucket-teamcity-plugin Web Resources">
+    <web-resource key="teamcity-trigger-plugin-resources" name="teamcity-trigger-plugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
         
-        <resource type="download" name="bitbucket-teamcity-plugin.css" location="/css/bitbucket-teamcity-plugin.css"/>
-        <resource type="download" name="bitbucket-teamcity-plugin.js" location="/js/bitbucket-teamcity-plugin.js"/>
+        <resource type="download" name="teamcity-trigger-plugin.css" location="/css/teamcity-trigger-plugin.css"/>
+        <resource type="download" name="teamcity-trigger-plugin.js" location="/js/teamcity-trigger-plugin.js"/>
         <resource type="download" name="images/" location="/images"/>
 
-        <context>bitbucket-teamcity-plugin</context>
+        <context>teamcity-trigger-plugin</context>
     </web-resource>
+
+    <web-item key="teamcity-trigger-settings-plugin-tab" name="Repository settings navigation tab"
+              section="bitbucket.repository.settings.panel/repository-workflow-section" weight="50">
+        <label>TeamCity Triggers</label>
+        <link>/plugins/servlet/teamcity-trigger/repository/${repository.project.key}/${repository.slug}/settings</link>
+        <tooltip>Setup TeamCity builds on push</tooltip>
+    </web-item>
     
 </atlassian-plugin>

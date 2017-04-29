@@ -1,4 +1,12 @@
+TeamCity Trigger Plugin
+=========================
+
+This plugin connects to TeamCity through their API's and allows an administrator of a repository to 
+set which build configuration will be triggered when a push is done.
+
+
 You have successfully created an Atlassian Plugin!
+---
 
 Here are the SDK commands you'll use immediately:
 

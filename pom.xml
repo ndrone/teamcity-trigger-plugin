@@ -5,17 +5,27 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ndrone</groupId>
-    <artifactId>bitbucket-teamcity-plugin</artifactId>
+    <artifactId>teamcity-trigger-plugin</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <organization>
-        <name>Example Company</name>
-        <url>http://www.example.com/</url>
+        <name>Nicholas Drone</name>
+        <url>https://github.com/ndrone</url>
     </organization>
 
-    <name>bitbucket-teamcity-plugin</name>
-    <description>This is the org.ndrone:bitbucket-teamcity-plugin plugin for Atlassian Bitbucket Server.</description>
+    <name>teamcity-trigger-plugin</name>
+    <description>This is the org.ndrone:teamcity-trigger-plugin plugin for Atlassian Bitbucket Server. After a commit it triggers a build within TeamCity.</description>
     <packaging>atlassian-plugin</packaging>
+
+    <properties>
+        <bitbucket.version>4.9.1</bitbucket.version>
+        <bitbucket.data.version>4.9.1</bitbucket.data.version>
+        <amps.version>6.2.11</amps.version>
+        <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
+        <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
+        <!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to generate bundle. -->
+        <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -30,6 +40,26 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.2-atlassian-1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atlassian.plugin</groupId>
+            <artifactId>atlassian-spring-scanner-annotation</artifactId>
+            <version>${atlassian.spring.scanner.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atlassian.plugin</groupId>
+            <artifactId>atlassian-spring-scanner-runtime</artifactId>
+            <version>${atlassian.spring.scanner.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.atlassian.sal</groupId>
             <artifactId>sal-api</artifactId>
@@ -51,15 +81,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>com.atlassian.templaterenderer</groupId>
+            <artifactId>atlassian-template-renderer-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -67,21 +96,6 @@
             <version>2.6</version>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>com.atlassian.plugin</groupId>
-            <artifactId>atlassian-spring-scanner-annotation</artifactId>
-            <version>${atlassian.spring.scanner.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.atlassian.plugin</groupId>
-            <artifactId>atlassian-spring-scanner-runtime</artifactId>
-            <version>${atlassian.spring.scanner.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -91,21 +105,22 @@
 
         <!-- WIRED TEST RUNNER DEPENDENCIES -->
         <dependency>
-            <groupId>com.atlassian.plugins</groupId>
-            <artifactId>atlassian-plugins-osgi-testrunner</artifactId>
-            <version>${plugin.testrunner.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.2-atlassian-1</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugins</groupId>
+            <artifactId>atlassian-plugins-osgi-testrunner</artifactId>
+            <version>${plugin.testrunner.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -170,15 +185,4 @@
             </plugin>
         </plugins>
     </build>
-    
-    <properties>
-        <bitbucket.version>4.9.1</bitbucket.version>
-        <bitbucket.data.version>4.9.1</bitbucket.data.version>
-        <amps.version>6.2.11</amps.version>
-        <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
-        <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
-        <!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to generate bundle. -->
-        <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
-    </properties>
-    
 </project>

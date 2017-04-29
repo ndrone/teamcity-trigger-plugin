@@ -1,0 +1,24 @@
+<html>
+<head>
+    <title>$i18n.getText("teamcity-trigger.admin.label")</title>
+    <meta name="decorator" content="bitbucket.repository.settings"/>
+    <meta name="projectKey" content="$repository.project.key"/>
+    <meta name="repositorySlug" content="$repository.slug"/>
+    <meta name="activeTab" content="teamcity-trigger-settings-plugin-tab"/>
+</head>
+<body>
+  <form id="admin" class="aui">
+      <div class="field-group">
+          <label for="name">$i18n.getText("teamcity-trigger.admin.name.label")</label>
+          <input type="text" id="name" name="name" class="text">
+      </div>
+      <div class="field-group">
+          <label for="time">$i18n.getText("teamcity-trigger.admin.time.label")</label>
+          <input type="text" id="time" name="time" class="text">
+      </div>
+      <div class="field-group">
+          <input type="submit" value="$i18n.getText("teamcity-trigger.admin.save.label")" class="button"/>
+      </div>
+  </form>
+</body>
+</html>
