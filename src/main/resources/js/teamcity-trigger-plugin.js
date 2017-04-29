@@ -2,34 +2,38 @@
 // This pattern is known as an "iife" - immediately invoked function expression
 
     // form the URL
-    var url = AJS.contextPath() + "/rest/teamcity-trigger-admin/1.0/";
+    var url = AJS.contextPath() + "/rest/teamcity-trigger/1.0/";
 
     // wait for the DOM (i.e., document "skeleton") to load. This likely isn't necessary for the current case,
     // but may be helpful for AJAX that provides secondary content.
     $(document).ready(function() {
-        // request the config information from the server
-        $.ajax({
-            url: url,
-            dataType: "json"
-        }).done(function(config) { // when the configuration is returned...
-
-            $("#name").val(config.name);
-            $("#time").val(config.time);
-            AJS.$("#admin").submit(function(e) {
-                e.preventDefault();
-                updateConfig();
-            });
+        AJS.$("#testConn").click(function () {
+            testConnection();
         });
     });
 
-})(AJS.$ || jQuery);
+    function testConnection() {
+        var data = '{ "username": "' + AJS.$("#username").attr("value")
+            + '", "password": "' +  AJS.$("#password").attr("value")
+            + '", "url": "' + AJS.$("#url").attr("value") + '" }';
+        console.log(data);
+        AJS.$.ajax({
+            url: url,
+            type: "POST",
+            contentType: "application/json",
+            data: data,
+            processData: false,
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            },
+            success: function() {
+                console.log("Tested ok")
+            }
+        }).done(function () {
+            console.log("done");
+        });
+    }
 
-function updateConfig() {
-    AJS.$.ajax({
-        url: baseUrl + "/rest/teamcity-trigger-admin/1.0/",
-        type: "PUT",
-        contentType: "application/json",
-        data: '{ "name": "' + AJS.$("#name").attr("value") + '", "time": ' +  AJS.$("#time").attr("value") + ' }',
-        processData: false
-    });
-}
+})(AJS.$ || jQuery);

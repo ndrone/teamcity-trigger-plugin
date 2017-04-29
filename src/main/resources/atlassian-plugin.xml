@@ -13,8 +13,12 @@
     <servlet name="Repository Servlet" key="repository-servlet"
              class="org.ndrone.api.RepositoryConfigServlet">
         <description key="repository-servlet.description">The Repository Servlet Plugin</description>
-        <url-pattern>/teamcity-trigger/repository/*</url-pattern>
+        <url-pattern>/teamcity-trigger/*</url-pattern>
     </servlet>
+
+    <rest key="rest" path="/teamcity-trigger" version="1.0">
+        <description>Provides REST resources for the UI.</description>
+    </rest>
 
     <!-- add our i18n resource -->
     <resource type="i18n" name="i18n" location="teamcity-trigger-plugin"/>
@@ -33,7 +37,7 @@
     <web-item key="teamcity-trigger-settings-plugin-tab" name="Repository settings navigation tab"
               section="bitbucket.repository.settings.panel/repository-workflow-section" weight="50">
         <label>TeamCity Triggers</label>
-        <link>/plugins/servlet/teamcity-trigger/repository/${repository.project.key}/${repository.slug}/settings</link>
+        <link>/plugins/servlet/teamcity-trigger/${repository.project.key}/repos/${repository.slug}/settings</link>
         <tooltip>Setup TeamCity builds on push</tooltip>
     </web-item>
     

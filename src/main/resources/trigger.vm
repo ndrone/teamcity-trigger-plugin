@@ -1,0 +1,44 @@
+<html>
+<head>
+    <title>$i18n.getText("teamcity-trigger.title")</title>
+    <meta name="decorator" content="bitbucket.repository.settings"/>
+    <meta name="projectKey" content="$repository.project.key"/>
+    <meta name="repositorySlug" content="$repository.slug"/>
+    <meta name="activeTab" content="teamcity-trigger-settings-plugin-tab"/>
+    $webResourceManager.requireResource("org.ndrone.teamcity-trigger-plugin:teamcity-trigger-plugin-resources")
+</head>
+<body>
+  <h2>Connection Information</h2>
+  <form id="teamcityForm" class="aui">
+      <div class="field-group">
+          <label for="username">
+            $i18n.getText("teamcity-trigger.username.label")
+              <span class="aui-icon icon-required"><span>(required)</span></span>
+          </label>
+          <input type="text" id="username" name="username" class="text">
+      </div>
+      <div class="field-group">
+          <label for="password">
+            $i18n.getText("teamcity-trigger.password.label")
+              <span class="aui-icon icon-required"><span>(required)</span></span>
+          </label>
+          <input type="password" id="password" name="password" class="text">
+      </div>
+      <div class="field-group">
+          <label for="url">
+            $i18n.getText("teamcity-trigger.url.label")
+              <span class="aui-icon icon-required"><span>(required)</span></span>
+          </label>
+          <input type="text" id="url" name="url" class="text">
+      </div>
+      <div class="field-group">
+          <input id="userSave" type="button" class="aui-button aui-button-primary"
+                 value="$i18n.getText("teamcity-trigger.save.label")"/>
+          <input id="testConn" type="button" class="aui-button aui-button-primary"
+                 value="$i18n.getText("teamcity-trigger.testConnection.label")"/>
+          <input type="reset" class="aui-button aui-button-link cancel"
+                 value="$i18n.getText("teamcity-trigger.reset.label")"/>
+      </div>
+  </form>
+</body>
+</html>

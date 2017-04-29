@@ -27,9 +27,12 @@ public class RepositoryConfigServlet extends HttpServlet
     private final RepositoryService repositoryService;
     private final TemplateRenderer  renderer;
 
+    private Map<String, Object> contextMap = new HashMap<String, Object>();
+
     @Autowired
     public RepositoryConfigServlet(@ComponentImport UserManager userManager,
-        @ComponentImport RepositoryService repositoryService, @ComponentImport TemplateRenderer renderer)
+        @ComponentImport RepositoryService repositoryService,
+        @ComponentImport TemplateRenderer renderer)
     {
         this.userManager = userManager;
         this.repositoryService = repositoryService;
@@ -45,17 +48,15 @@ public class RepositoryConfigServlet extends HttpServlet
             return;
         }
 
-        Repository repository = getRepository(req, resp);
+        Repository repository = getRepository(req);
         if (repository == null)
         {
             return;
         }
-        Map<String, Object> contextMap = new HashMap<String, Object>();
         contextMap.put("repository", repository);
 
-
         resp.setContentType("text/html;charset=utf-8");
-        renderer.render("admin.vm", contextMap, resp.getWriter());
+        renderer.render("trigger.vm", contextMap, resp.getWriter());
 
     }
 
@@ -66,23 +67,20 @@ public class RepositoryConfigServlet extends HttpServlet
             || !userManager.isSystemAdmin(user.getUserKey()));
     }
 
-    private Repository getRepository(HttpServletRequest req, HttpServletResponse resp) throws IOException
+    private Repository getRepository(HttpServletRequest req) throws IOException
     {
+        Repository repository;
         // Get repoSlug from path
-        String pathInfo = req.getPathInfo();
-
-        String[] components = pathInfo.split("/");
-
+        String[] components = req.getPathInfo().split("/");
         if (components.length < 3)
         {
-            return null;
+            repository = null;
+        }
+        else
+        {
+            repository = repositoryService.getBySlug(components[1], components[3]);
         }
 
-        Repository repository = repositoryService.getBySlug(components[1], components[2]);
-        if (repository == null)
-        {
-            return null;
-        }
         return repository;
     }
 }
