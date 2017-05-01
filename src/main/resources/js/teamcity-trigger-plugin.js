@@ -27,7 +27,7 @@
                 AJS.$("#alerts").removeClass("error");
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR);
+                console.log(jqXHR.responseText);
                 AJS.$("#alerts").addClass("error");
                 AJS.$("#alerts").text("Could not connect please try again.")
             },

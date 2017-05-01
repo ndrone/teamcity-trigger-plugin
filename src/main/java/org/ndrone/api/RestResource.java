@@ -4,10 +4,11 @@ import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.ndrone.api.model.TeamCity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
@@ -28,11 +29,19 @@ public class RestResource
 {
     @ComponentImport
     private final UserManager userManager;
+    private final RestTemplate restTemplate;
 
     @Inject
     public RestResource(UserManager userManager)
     {
         this.userManager = userManager;
+        this.restTemplate = new RestTemplate();
+    }
+
+    public RestResource(UserManager userManager, RestTemplate restTemplate)
+    {
+        this.userManager = userManager;
+        this.restTemplate = restTemplate;
     }
 
     @POST
@@ -47,11 +56,37 @@ public class RestResource
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(chopTrailingSlash(teamCity.getUrl())
-            + "/httpAuth/app/rest/latest", HttpMethod.GET, null, String.class);
+        HttpStatus statusCode;
+        try
+        {
+            ResponseEntity<String> response = restTemplate
+                    .exchange(chopTrailingSlash(teamCity.getUrl()) + "/httpAuth/app/rest/latest",
+                            HttpMethod.GET, new HttpEntity<Object>(
+                                    createHeaders(teamCity.getUsername(), teamCity.getPassword())),
+                            String.class);
+            statusCode = response.getStatusCode();
+        }
+        catch (HttpClientErrorException e)
+        {
+            statusCode = e.getStatusCode();
+        }
 
-        return Response.status(response.getStatusCodeValue()).build();
+        return Response.status(statusCode.value()).build();
+    }
+
+    private HttpHeaders createHeaders(final String username, final String password)
+    {
+        return new HttpHeaders()
+        {
+            {
+                String auth = username
+                    + ":" + password;
+                byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
+                String authHeader = "Basic "
+                    + new String(encodedAuth);
+                set("Authorization", authHeader);
+            }
+        };
     }
 
     private String chopTrailingSlash(String url)
