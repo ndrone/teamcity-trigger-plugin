@@ -16,20 +16,24 @@
         var data = '{ "username": "' + AJS.$("#username").attr("value")
             + '", "password": "' +  AJS.$("#password").attr("value")
             + '", "url": "' + AJS.$("#url").attr("value") + '" }';
-        console.log(data);
         AJS.$.ajax({
-            url: url,
+            url: url + "test",
             type: "POST",
             contentType: "application/json",
             data: data,
             processData: false,
+            beforeSend: function () {
+                AJS.$("#alerts").empty();
+                AJS.$("#alerts").removeClass("error");
+            },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
+                AJS.$("#alerts").addClass("error");
+                AJS.$("#alerts").text("Could not connect please try again.")
             },
             success: function() {
-                console.log("Tested ok")
+                AJS.$("#alerts").addClass("success");
+                AJS.$("#alerts").text("Connection Successful.")
             }
         }).done(function () {
             console.log("done");

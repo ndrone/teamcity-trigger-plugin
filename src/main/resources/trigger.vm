@@ -8,7 +8,8 @@
     $webResourceManager.requireResource("org.ndrone.teamcity-trigger-plugin:teamcity-trigger-plugin-resources")
 </head>
 <body>
-  <h2>Connection Information</h2>
+  <h2><span id="upm-title">Connection Information</span></h2>
+  <div id="alerts" class="field-group"></div>
   <form id="teamcityForm" class="aui">
       <div class="field-group">
           <label for="username">
