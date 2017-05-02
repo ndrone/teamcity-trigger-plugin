@@ -3,11 +3,13 @@ package org.ndrone.api;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.sal.api.user.UserProfile;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.ndrone.Utils;
 import org.ndrone.api.model.TeamCity;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,7 +30,7 @@ import javax.ws.rs.core.Response;
 public class RestResource
 {
     @ComponentImport
-    private final UserManager userManager;
+    private final UserManager  userManager;
     private final RestTemplate restTemplate;
 
     @Inject
@@ -49,9 +51,8 @@ public class RestResource
     @Path("/test")
     public Response testConnection(final TeamCity teamCity, @Context HttpServletRequest request)
     {
-        UserProfile user = userManager.getRemoteUser();
-        if (user == null
-            || !userManager.isSystemAdmin(user.getUserKey()))
+
+        if(!Utils.validateUser(userManager))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -60,10 +61,12 @@ public class RestResource
         try
         {
             ResponseEntity<String> response = restTemplate
-                    .exchange(chopTrailingSlash(teamCity.getUrl()) + "/httpAuth/app/rest/latest",
-                            HttpMethod.GET, new HttpEntity<Object>(
-                                    createHeaders(teamCity.getUsername(), teamCity.getPassword())),
-                            String.class);
+                .exchange(chopTrailingSlash(teamCity.getUrl())
+                    + "/httpAuth/app/rest/latest",
+                    HttpMethod.GET,
+                    new HttpEntity<Object>(
+                        Utils.createHeaders(teamCity.getUsername(), teamCity.getPassword())),
+                    String.class);
             statusCode = response.getStatusCode();
         }
         catch (HttpClientErrorException e)
@@ -72,21 +75,6 @@ public class RestResource
         }
 
         return Response.status(statusCode.value()).build();
-    }
-
-    private HttpHeaders createHeaders(final String username, final String password)
-    {
-        return new HttpHeaders()
-        {
-            {
-                String auth = username
-                    + ":" + password;
-                byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
-                String authHeader = "Basic "
-                    + new String(encodedAuth);
-                set("Authorization", authHeader);
-            }
-        };
     }
 
     private String chopTrailingSlash(String url)

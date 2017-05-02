@@ -5,10 +5,16 @@
         <vendor name="${project.organization.name}" url="${project.organization.url}" />
         <param name="plugin-icon">images/pluginIcon.png</param>
         <param name="plugin-logo">images/pluginLogo.png</param>
+        <param name="atlassian-data-center-compatible">true</param>
         <permissions>
             <permission>execute_java</permission>
         </permissions>
     </plugin-info>
+
+    <ao key="ao-module">
+        <description>The AO module for this plugin.</description>
+        <entity>org.ndrone.api.dao.TeamCityTriggerConfiguration</entity>
+    </ao>
 
     <servlet name="Repository Servlet" key="repository-servlet"
              class="org.ndrone.api.RepositoryConfigServlet">

@@ -13,20 +13,17 @@
     });
 
     function testConnection() {
-        var data = '{ "username": "' + AJS.$("#username").attr("value")
-            + '", "password": "' +  AJS.$("#password").attr("value")
-            + '", "url": "' + AJS.$("#url").attr("value") + '" }';
         AJS.$.ajax({
             url: url + "test",
             type: "POST",
             contentType: "application/json",
-            data: data,
+            data: AJS.$("#teamcityForm").serialize(),
             processData: false,
             beforeSend: function () {
                 AJS.$("#alerts").empty();
                 AJS.$("#alerts").removeClass("error");
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR) {
                 console.log(jqXHR.responseText);
                 AJS.$("#alerts").addClass("error");
                 AJS.$("#alerts").text("Could not connect please try again.")
