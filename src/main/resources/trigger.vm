@@ -10,17 +10,16 @@
 <body>
   <h2><span id="upm-title">Connection Information</span></h2>
   <div id="alerts" class="field-group"></div>
-  <span>$teamcitySize</span>
   <form id="teamcityForm" class="aui">
-      <input id="id" type="hidden" value="$repository.id"/>
-      <input id="buildConfigId" type="hidden" value=""/>
+      <input id="id" name="id" type="hidden" value="$repository.id"/>
+      <input id="buildConfigId" name="buildConfigId" type="hidden" value="$!teamcity.buildConfigId"/>
       <div class="field-group">
           <label for="username">
             $i18n.getText("teamcity-trigger.username.label")
               <span class="aui-icon icon-required"><span>(required)</span></span>
           </label>
           <input type="text" id="username" name="username" class="text"
-            value="">
+            value="$!teamcity.username">
       </div>
       <div class="field-group">
           <label for="password">
@@ -28,7 +27,7 @@
               <span class="aui-icon icon-required"><span>(required)</span></span>
           </label>
           <input type="password" id="password" name="password" class="text"
-            value="" />
+            value="$!teamcity.secret" />
       </div>
       <div class="field-group">
           <label for="url">
@@ -36,7 +35,7 @@
               <span class="aui-icon icon-required"><span>(required)</span></span>
           </label>
           <input type="text" id="url" name="url" class="text"
-            value=""/>
+            value="$!teamcity.url"/>
       </div>
       <div class="field-group">
           <input id="userSave" type="button" class="aui-button aui-button-primary"

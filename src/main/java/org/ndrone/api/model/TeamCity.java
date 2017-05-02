@@ -23,6 +23,19 @@ public final class TeamCity
     @XmlElement
     private String buildConfigId;
 
+    public TeamCity()
+    {
+    }
+
+    private TeamCity(Builder builder)
+    {
+        setId(builder.id);
+        setUsername(builder.username);
+        setPassword(builder.password);
+        setUrl(builder.url);
+        setBuildConfigId(builder.buildConfigId);
+    }
+
     public String getId()
     {
         return id;
@@ -71,5 +84,53 @@ public final class TeamCity
     public void setBuildConfigId(String buildConfigId)
     {
         this.buildConfigId = buildConfigId;
+    }
+
+    public static final class Builder
+    {
+        private String id;
+        private String username;
+        private String password;
+        private String url;
+        private String buildConfigId;
+
+        public Builder()
+        {
+        }
+
+        public Builder withId(String val)
+        {
+            id = val;
+            return this;
+        }
+
+        public Builder withUsername(String val)
+        {
+            username = val;
+            return this;
+        }
+
+        public Builder withPassword(String val)
+        {
+            password = val;
+            return this;
+        }
+
+        public Builder withUrl(String val)
+        {
+            url = val;
+            return this;
+        }
+
+        public Builder withBuildConfigId(String val)
+        {
+            buildConfigId = val;
+            return this;
+        }
+
+        public TeamCity build()
+        {
+            return new TeamCity(this);
+        }
     }
 }

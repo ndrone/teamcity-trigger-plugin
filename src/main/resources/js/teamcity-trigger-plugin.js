@@ -8,16 +8,17 @@
     // but may be helpful for AJAX that provides secondary content.
     $(document).ready(function() {
         AJS.$("#testConn").click(function () {
-            testConnection();
+            var data = toJSONString(document.getElementById("teamcityForm"));
+            testConnection(data);
         });
     });
 
-    function testConnection() {
+    function testConnection(data) {
         AJS.$.ajax({
             url: url + "test",
             type: "POST",
             contentType: "application/json",
-            data: AJS.$("#teamcityForm").serialize(),
+            data: data,
             processData: false,
             beforeSend: function () {
                 AJS.$("#alerts").empty();
@@ -35,6 +36,22 @@
         }).done(function () {
             console.log("done");
         });
+    }
+
+    function toJSONString( form ) {
+        var obj = {};
+        var elements = form.querySelectorAll( "input" );
+        for( var i = 0; i < elements.length; ++i ) {
+            var element = elements[i];
+            var name = element.name;
+            var value = element.value;
+
+            if( name ) {
+                obj[ name ] = value;
+            }
+        }
+
+        return JSON.stringify( obj );
     }
 
 })(AJS.$ || jQuery);

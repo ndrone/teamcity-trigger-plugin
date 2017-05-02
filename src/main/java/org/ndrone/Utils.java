@@ -2,7 +2,9 @@ package org.ndrone;
 
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
+import com.atlassian.sal.core.util.Assert;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 
 /**
@@ -30,5 +32,16 @@ public final class Utils
         UserProfile user = userManager.getRemoteUser();
         return !(user == null
                 || !userManager.isSystemAdmin(user.getUserKey()));
+    }
+
+    public static String chopTrailingSlash(String url)
+    {
+        Assert.notNull(url);
+        if (url.substring(url.length()
+                - 1).equals("/"))
+        {
+            return StringUtils.chop(url);
+        }
+        return url;
     }
 }

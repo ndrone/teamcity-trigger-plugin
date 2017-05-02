@@ -1,4 +1,4 @@
-package ut.org.ndrone;
+package ut.org.ndrone.api;
 
 import com.atlassian.sal.api.user.UserKey;
 import com.atlassian.sal.api.user.UserManager;

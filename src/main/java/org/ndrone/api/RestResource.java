@@ -3,7 +3,6 @@ package org.ndrone.api;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
-import org.apache.commons.lang3.StringUtils;
 import org.ndrone.Utils;
 import org.ndrone.api.model.TeamCity;
 import org.springframework.http.HttpEntity;
@@ -61,7 +60,7 @@ public class RestResource
         try
         {
             ResponseEntity<String> response = restTemplate
-                .exchange(chopTrailingSlash(teamCity.getUrl())
+                .exchange(Utils.chopTrailingSlash(teamCity.getUrl())
                     + "/httpAuth/app/rest/latest",
                     HttpMethod.GET,
                     new HttpEntity<Object>(
@@ -75,15 +74,5 @@ public class RestResource
         }
 
         return Response.status(statusCode.value()).build();
-    }
-
-    private String chopTrailingSlash(String url)
-    {
-        if (url.substring(url.length()
-            - 1).equals("/"))
-        {
-            return StringUtils.chop(url);
-        }
-        return url;
     }
 }
