@@ -8,7 +8,6 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import org.ndrone.Utils;
 import org.ndrone.api.dao.TeamCityTriggerConfigDao;
 import org.ndrone.api.dao.TeamCityTriggerConfiguration;
-import org.ndrone.api.model.TeamCity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,13 +57,14 @@ public class RepositoryConfigServlet extends HttpServlet
         }
         Map<String, Object> contextMap = new HashMap<String, Object>();
         contextMap.put("repository", repository);
-        TeamCityTriggerConfiguration[] teamCityTriggerConfigurations = dao.find(repository);
+        TeamCityTriggerConfiguration[] teamCityTriggerConfigurations = dao.find(repository.getId());
         if (teamCityTriggerConfigurations.length == 0)
         {
             contextMap.put("teamcity",
                 new TeamCity.Builder().withId(String.valueOf(repository.getId())).build());
         }
-        else{
+        else
+        {
             contextMap.put("teamcity", teamCityTriggerConfigurations[1]);
         }
 
@@ -76,7 +76,6 @@ public class RepositoryConfigServlet extends HttpServlet
     private Repository getRepository(HttpServletRequest req) throws IOException
     {
         Repository repository;
-        // Get repoSlug from path
         String[] components = req.getPathInfo().split("/");
         if (components.length < 3)
         {

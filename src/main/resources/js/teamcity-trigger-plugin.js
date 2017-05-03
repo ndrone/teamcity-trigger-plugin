@@ -11,6 +11,10 @@
             var data = toJSONString(document.getElementById("teamcityForm"));
             testConnection(data);
         });
+        AJS.$("#userSave").click(function () {
+            var data = toJSONString(document.getElementById("teamcityForm"));
+            saveUser(data);
+        });
     });
 
     function testConnection(data) {
@@ -32,6 +36,31 @@
             success: function() {
                 AJS.$("#alerts").addClass("success");
                 AJS.$("#alerts").text("Connection Successful.")
+            }
+        }).done(function () {
+            console.log("done");
+        });
+    }
+
+    function saveUser(data) {
+        AJS.$.ajax({
+            url: url + "saveUser",
+            type: "POST",
+            contentType: "application/json",
+            data: data,
+            processData: false,
+            beforeSend: function () {
+                AJS.$("#alerts").empty();
+                AJS.$("#alerts").removeClass("error");
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+                AJS.$("#alerts").addClass("error");
+                AJS.$("#alerts").text("Could not save user please try again.")
+            },
+            success: function() {
+                AJS.$("#alerts").addClass("success");
+                AJS.$("#alerts").text("Save Successful.")
             }
         }).done(function () {
             console.log("done");

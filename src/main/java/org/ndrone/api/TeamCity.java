@@ -1,4 +1,4 @@
-package org.ndrone.api.model;
+package org.ndrone.api;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

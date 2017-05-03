@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.ndrone.api.RestResource;
-import org.ndrone.api.model.TeamCity;
+import org.ndrone.api.TeamCity;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;

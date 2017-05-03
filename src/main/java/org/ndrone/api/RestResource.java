@@ -4,7 +4,6 @@ import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import org.ndrone.Utils;
-import org.ndrone.api.model.TeamCity;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -74,5 +73,18 @@ public class RestResource
         }
 
         return Response.status(statusCode.value()).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/saveUser")
+    public Response saveUser(final TeamCity teamCity, @Context HttpServletRequest request)
+    {
+        if(!Utils.validateUser(userManager))
+        {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        return Response.status(Response.Status.OK).build();
     }
 }

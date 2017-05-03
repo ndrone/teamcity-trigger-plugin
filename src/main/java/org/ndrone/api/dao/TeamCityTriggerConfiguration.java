@@ -27,12 +27,14 @@ public interface TeamCityTriggerConfiguration extends Entity
     @Mutator("BUILD_CONFIG_ID")
     void setBuildConfigId(String buildConfigId);
 
+    @NotNull
     @Accessor("USERNAME")
     String getUsername();
 
     @Mutator("USERNAME")
     void setUsername(String username);
 
+    @NotNull
     @Accessor("SECRET")
     String getSecret();
 
