@@ -12,11 +12,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -47,10 +45,10 @@ public class RestResource
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/test")
-    public Response testConnection(final TeamCity teamCity, @Context HttpServletRequest request)
+    public Response testConnection(final TeamCity teamCity)
     {
 
-        if(!Utils.validateUser(userManager))
+        if (!Utils.validateUser(userManager))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -77,10 +75,10 @@ public class RestResource
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/saveUser")
-    public Response saveUser(final TeamCity teamCity, @Context HttpServletRequest request)
+    @Path("/save")
+    public Response save(final TeamCity teamCity)
     {
-        if(!Utils.validateUser(userManager))
+        if (!Utils.validateUser(userManager))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }

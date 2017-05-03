@@ -11,3 +11,7 @@
     display: block;
     margin: 5px 0 0 0;
 }
+
+.build-config-div {
+    border-bottom: 0px;
+}

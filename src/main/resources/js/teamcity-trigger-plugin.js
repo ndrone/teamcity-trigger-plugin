@@ -11,10 +11,18 @@
             var data = toJSONString(document.getElementById("teamcityForm"));
             testConnection(data);
         });
-        AJS.$("#userSave").click(function () {
-            var data = toJSONString(document.getElementById("teamcityForm"));
-            saveUser(data);
+        AJS.$("#save").click(function () {
+            save();
         });
+        AJS.$("#update").click(function () {
+           save();
+        });
+        AJS.$("#delete").click(function () {
+
+        });
+        if(AJS.$("#buildConfigId").val().length > 0 ) {
+            AJS.$("#buildConfigDiv").show();
+        }
     });
 
     function testConnection(data) {
@@ -35,19 +43,21 @@
             },
             success: function() {
                 AJS.$("#alerts").addClass("success");
-                AJS.$("#alerts").text("Connection Successful.")
+                AJS.$("#alerts").text("Connection Successful.");
+                AJS.$("#buildConfigDiv").show();
             }
         }).done(function () {
             console.log("done");
         });
     }
 
-    function saveUser(data) {
+    function save() {
+        AJS.$("#buildConfigId").val(AJS.$("#buildConfig").val());
         AJS.$.ajax({
-            url: url + "saveUser",
+            url: url + "save",
             type: "POST",
             contentType: "application/json",
-            data: data,
+            data: toJSONString(document.getElementById("teamcityForm")),
             processData: false,
             beforeSend: function () {
                 AJS.$("#alerts").empty();
@@ -56,11 +66,12 @@
             error: function(jqXHR) {
                 console.log(jqXHR.responseText);
                 AJS.$("#alerts").addClass("error");
-                AJS.$("#alerts").text("Could not save user please try again.")
+                AJS.$("#alerts").text("Could not save user please try again.");
             },
             success: function() {
                 AJS.$("#alerts").addClass("success");
-                AJS.$("#alerts").text("Save Successful.")
+                AJS.$("#alerts").text("Save Successful.");
+                AJS.$("#buildConfigDiv").show();
             }
         }).done(function () {
             console.log("done");

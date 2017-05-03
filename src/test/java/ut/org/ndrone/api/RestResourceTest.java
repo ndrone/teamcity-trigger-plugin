@@ -20,7 +20,6 @@ import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 /**
@@ -110,8 +109,7 @@ public class RestResourceTest
                     MockRestResponseCreators.withStatus(HttpStatus.valueOf(expectedStatusCode)));
         }
 
-        Response response = restResource.testConnection(teamCity,
-            Mockito.mock(HttpServletRequest.class));
+        Response response = restResource.testConnection(teamCity);
 
         Assert.assertEquals(expectedStatusCode, response.getStatus());
 

@@ -24,10 +24,10 @@ import java.util.Map;
 @Component
 public class RepositoryConfigServlet extends HttpServlet
 {
-    private final UserManager              userManager;
-    private final RepositoryService        repositoryService;
-    private final TemplateRenderer         renderer;
-    private final TeamCityService teamCityService;
+    private final UserManager       userManager;
+    private final RepositoryService repositoryService;
+    private final TemplateRenderer  renderer;
+    private final TeamCityService   teamCityService;
 
     @Autowired
     public RepositoryConfigServlet(@ComponentImport UserManager userManager,

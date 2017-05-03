@@ -8,7 +8,7 @@
     $webResourceManager.requireResource("org.ndrone.teamcity-trigger-plugin:teamcity-trigger-plugin-resources")
 </head>
 <body>
-  <h2><span id="upm-title">Connection Information</span></h2>
+  <h2><span id="upm-title">$i18n.getText("teamcity-trigger.connection.title")</span></h2>
   <div id="alerts" class="field-group"></div>
   <form id="teamcityForm" class="aui">
       <input id="id" name="id" type="hidden" value="$repository.id"/>
@@ -38,12 +38,27 @@
             value="$!teamcity.url"/>
       </div>
       <div class="field-group">
-          <input id="userSave" type="button" class="aui-button aui-button-primary"
+          <input id="save" type="button" class="aui-button aui-button-primary"
                  value="$i18n.getText("teamcity-trigger.save.label")"/>
           <input id="testConn" type="button" class="aui-button aui-button-primary"
                  value="$i18n.getText("teamcity-trigger.testConnection.label")"/>
           <input type="reset" class="aui-button aui-button-link cancel"
                  value="$i18n.getText("teamcity-trigger.reset.label")"/>
+      </div>
+      <div id="buildConfigDiv" class="aui-page-panel build-config-div" style="display: none;">
+          <h2><span id="upm-title">$i18n.getText("teamcity-trigger.buildConfig.title")</span></h2>
+          <div class="field-group">
+              <label for="buildConfig">
+                $i18n.getText("teamcity-trigger.buildConfig.label")
+              </label>
+              <input id="buildConfig" type="text" class="text" value="$!teamcity.buildConfigId"/>
+          </div>
+          <div class="field-group">
+              <input id="update" type="button" class="aui-button aui-button-primary"
+                     value="$i18n.getText("teamcity-trigger.buildConfig.update.button")"/>
+              <input id="delete" type="button" class="aui-button aui-button-link cancel"
+                     value="$i18n.getText("teamcity-trigger.buildConfig.delete.button")"/>
+          </div>
       </div>
   </form>
 </body>
