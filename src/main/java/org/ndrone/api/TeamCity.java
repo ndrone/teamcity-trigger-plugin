@@ -86,6 +86,49 @@ public final class TeamCity
         this.buildConfigId = buildConfigId;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+            return true;
+        if (o == null
+            || getClass() != o.getClass())
+            return false;
+
+        TeamCity teamCity = (TeamCity) o;
+
+        if (!id.equals(teamCity.id))
+            return false;
+        if (!username.equals(teamCity.username))
+            return false;
+        if (!password.equals(teamCity.password))
+            return false;
+        if (!url.equals(teamCity.url))
+            return false;
+        return buildConfigId != null
+            ? buildConfigId.equals(teamCity.buildConfigId) : teamCity.buildConfigId == null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = id.hashCode();
+        result = 31
+            * result
+            + username.hashCode();
+        result = 31
+            * result
+            + password.hashCode();
+        result = 31
+            * result
+            + url.hashCode();
+        result = 31
+            * result
+            + (buildConfigId != null
+                ? buildConfigId.hashCode() : 0);
+        return result;
+    }
+
     public static final class Builder
     {
         private String id;
