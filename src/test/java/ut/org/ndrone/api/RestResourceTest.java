@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.ndrone.api.RestResource;
 import org.ndrone.api.TeamCity;
+import org.ndrone.api.service.TeamCityService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -28,10 +29,11 @@ import javax.ws.rs.core.Response;
 @RunWith(MockitoJUnitRunner.class)
 public class RestResourceTest
 {
-    private static final String   URL         = "http://localhost:8111";
+    private static final String   URL             = "http://localhost:8111";
 
     private RestResource          restResource;
-    private UserManager           userManager = Mockito.mock(UserManager.class);
+    private UserManager           userManager     = Mockito.mock(UserManager.class);
+    private TeamCityService       teamCityService = Mockito.mock(TeamCityService.class);
     private MockRestServiceServer server;
     private RestTemplate          restTemplate;
 
@@ -41,8 +43,8 @@ public class RestResourceTest
         restTemplate = Mockito.spy(new RestTemplate());
         server = MockRestServiceServer.bindTo(restTemplate).build();
 
-        Mockito.reset(userManager, restTemplate);
-        restResource = new RestResource(userManager, restTemplate);
+        Mockito.reset(userManager, restTemplate, teamCityService);
+        restResource = new RestResource(userManager, teamCityService, restTemplate);
     }
 
     @Test
@@ -72,6 +74,24 @@ public class RestResourceTest
     {
         setupBitbucketUser(true);
         testConnection(getTeamCity(URL), 200, 1);
+    }
+
+    @Test
+    public void saveNonAdmin()
+    {
+        setupBitbucketUser(false);
+        Response response = restResource.save(new TeamCity());
+        Assert.assertEquals(401, response.getStatus());
+        Mockito.verify(teamCityService, Mockito.never()).save(Mockito.any(TeamCity.class));
+    }
+
+    @Test
+    public void save()
+    {
+        setupBitbucketUser(true);
+        Response response = restResource.save(new TeamCity());
+        Assert.assertEquals(200, response.getStatus());
+        Mockito.verify(teamCityService, Mockito.times(1)).save(Mockito.any(TeamCity.class));
     }
 
     private void setupBitbucketUser(boolean admin)

@@ -27,7 +27,7 @@
               <span class="aui-icon icon-required"><span>(required)</span></span>
           </label>
           <input type="password" id="password" name="password" class="text"
-            value="$!teamcity.secret" />
+            value="$!teamcity.password" />
       </div>
       <div class="field-group">
           <label for="url">

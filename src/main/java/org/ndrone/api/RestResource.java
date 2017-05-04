@@ -4,6 +4,7 @@ import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import org.ndrone.Utils;
+import org.ndrone.api.service.TeamCityService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -26,19 +27,24 @@ import javax.ws.rs.core.Response;
 public class RestResource
 {
     @ComponentImport
-    private final UserManager  userManager;
-    private final RestTemplate restTemplate;
+    private final UserManager     userManager;
+
+    private final RestTemplate    restTemplate;
+
+    private final TeamCityService teamCityService;
 
     @Inject
-    public RestResource(UserManager userManager)
+    public RestResource(UserManager userManager, TeamCityService teamCityService)
     {
         this.userManager = userManager;
+        this.teamCityService = teamCityService;
         this.restTemplate = new RestTemplate();
     }
 
-    public RestResource(UserManager userManager, RestTemplate restTemplate)
+    public RestResource(UserManager userManager, TeamCityService teamCityService, RestTemplate restTemplate)
     {
         this.userManager = userManager;
+        this.teamCityService = teamCityService;
         this.restTemplate = restTemplate;
     }
 
@@ -82,7 +88,7 @@ public class RestResource
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-
+        teamCityService.save(teamCity);
         return Response.status(Response.Status.OK).build();
     }
 }
