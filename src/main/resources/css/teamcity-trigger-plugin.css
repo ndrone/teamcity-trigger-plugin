@@ -15,3 +15,7 @@
 .build-config-div {
     border-bottom: 0px;
 }
+
+.build-config-div h2 {
+    margin-top: 5px;
+}

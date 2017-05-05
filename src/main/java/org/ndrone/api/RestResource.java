@@ -123,4 +123,18 @@ public class RestResource
 
         return Response.status(statusCode.value()).entity(buildTypes).build();
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/delete")
+    public Response delete(final TeamCity teamCity)
+    {
+        if (!Utils.validateUser(userManager))
+        {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        teamCityService.delete(teamCity);
+        return Response.status(Response.Status.OK).build();
+    }
 }

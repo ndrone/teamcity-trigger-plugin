@@ -18,7 +18,7 @@
            save();
         });
         AJS.$("#delete").click(function () {
-
+            deleteConfig();
         });
         AJS.$("#buildConfig").click(function () {
            fetchBuildConfigs();
@@ -107,6 +107,39 @@
                     }));
                 });
                 AJS.$('html,body').css('cursor', 'initial');
+            }
+        });
+    }
+
+    function deleteConfig() {
+        AJS.$("#buildConfigId").val(AJS.$("#buildConfig option:selected").val());
+        AJS.$("#buildConfigName").val(AJS.$("#buildConfig option:selected").text());
+        AJS.$.ajax({
+            url: url + "delete",
+            type: "POST",
+            contentType: "application/json",
+            data: toJSONString(document.getElementById("teamcityForm")),
+            processData: false,
+            beforeSend: function () {
+                AJS.$("#alerts").empty();
+                AJS.$("#alerts").removeClass("error");
+                AJS.$("#alerts").removeClass("success");
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+                AJS.$("#alerts").addClass("error");
+                AJS.$("#alerts").text("Could not save user please try again.");
+            },
+            success: function() {
+                AJS.$("#alerts").addClass("success");
+                AJS.$("#alerts").text("Delete Successful.");
+                AJS.$("#buildConfigDiv").hide();
+                AJS.$("#buildConfig").empty();
+                AJS.$("#buildConfigId").val('');
+                AJS.$("#buildConfigName").val('');
+                AJS.$("#username").val('');
+                AJS.$("#password").val('');
+                AJS.$("#url").val('');
             }
         });
     }
