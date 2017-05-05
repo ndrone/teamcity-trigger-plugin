@@ -1,5 +1,6 @@
 package ut.org.ndrone.api.service;
 
+import com.atlassian.bitbucket.repository.Repository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +13,12 @@ import org.ndrone.api.dao.TeamCityTriggerConfiguration;
 import org.ndrone.api.service.TeamCityService;
 import org.ndrone.api.service.TeamCityServiceImpl;
 
-import com.atlassian.bitbucket.repository.Repository;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Nicholas Drone on 5/2/17.
@@ -85,39 +91,51 @@ public class TeamCityServiceTest
 
     @Test
     public void saveNewObject()
+        throws BadPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException,
+        IllegalBlockSizeException, NoSuchPaddingException, InvalidKeyException
     {
         setupNoConfigurations();
 
-        service.save(new TeamCity.Builder().withId("1").withBuildConfigId("1").withUsername("test")
-            .withPassword("test").withUrl("test").withBuildConfigName("test").build());
-        Mockito.verify(dao, Mockito.times(1)).save(Mockito.eq(1), Mockito.eq("1"),
-            Mockito.eq("test"), Mockito.eq("test"), Mockito.eq("test"), Mockito.eq("test"));
+        service.save(new TeamCity.Builder().withId("1").withUsername("test").withPassword("test")
+            .withUrl("test").withBuildConfigId("1").withBuildConfigName("test").build());
+
+        Mockito.verify(dao, Mockito.times(1)).save(Mockito.eq(1), Mockito.eq("test"),
+            Mockito.anyString(), Mockito.anyString(), Mockito.eq("test"), Mockito.eq("1"),
+            Mockito.eq("test"));
         Mockito.verify(dao, Mockito.never())
             .update(Mockito.any(TeamCityTriggerConfiguration.class));
     }
 
     @Test
     public void updateSameObject()
+        throws BadPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException,
+        IllegalBlockSizeException, NoSuchPaddingException, InvalidKeyException
     {
         setupConfigurations();
 
-        service.save(new TeamCity.Builder().withId("1").withBuildConfigId("1").withUsername("test")
-            .withPassword("test").withUrl("test").withBuildConfigName("test").build());
+        service.save(new TeamCity.Builder().withId("1").withUsername("test").withPassword("test")
+            .withUrl("test").withBuildConfigId("1").withBuildConfigName("test").build());
+
         Mockito.verify(dao, Mockito.never()).save(Mockito.anyInt(), Mockito.anyString(),
-            Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+            Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+            Mockito.anyString());
         Mockito.verify(dao, Mockito.never())
             .update(Mockito.any(TeamCityTriggerConfiguration.class));
     }
 
     @Test
     public void update()
+        throws BadPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException,
+        IllegalBlockSizeException, NoSuchPaddingException, InvalidKeyException
     {
         setupConfigurations();
 
-        service.save(new TeamCity.Builder().withId("1").withBuildConfigId("2").withUsername("test")
-            .withPassword("test").withUrl("test").withBuildConfigName("test").build());
+        service.save(new TeamCity.Builder().withId("1").withUsername("test").withPassword("test")
+            .withUrl("test").withBuildConfigId("2").withBuildConfigName("test").build());
+
         Mockito.verify(dao, Mockito.never()).save(Mockito.anyInt(), Mockito.anyString(),
-            Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+            Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+            Mockito.anyString());
         Mockito.verify(dao, Mockito.times(1))
             .update(Mockito.any(TeamCityTriggerConfiguration.class));
     }

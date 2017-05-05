@@ -21,7 +21,13 @@ import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.ws.rs.core.Response;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Nicholas Drone on 5/1/17.
@@ -77,7 +83,9 @@ public class RestResourceTest
     }
 
     @Test
-    public void saveNonAdmin()
+    public void saveNonAdmin() throws BadPaddingException, InvalidAlgorithmParameterException,
+            NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException,
+            InvalidKeyException
     {
         setupBitbucketUser(false);
         Response response = restResource.save(new TeamCity());
@@ -86,7 +94,9 @@ public class RestResourceTest
     }
 
     @Test
-    public void save()
+    public void save() throws BadPaddingException, InvalidAlgorithmParameterException,
+            NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException,
+            InvalidKeyException
     {
         setupBitbucketUser(true);
         Response response = restResource.save(new TeamCity());

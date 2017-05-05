@@ -21,12 +21,6 @@ public interface TeamCityTriggerConfiguration extends Entity
     @Mutator("REPOS_ID")
     void setReposId(Integer reposId);
 
-    @Accessor("BUILD_CONFIG_ID")
-    String getBuildConfigId();
-
-    @Mutator("BUILD_CONFIG_ID")
-    void setBuildConfigId(String buildConfigId);
-
     @NotNull
     @Accessor("USERNAME")
     String getUsername();
@@ -42,11 +36,24 @@ public interface TeamCityTriggerConfiguration extends Entity
     void setSecret(String secret);
 
     @NotNull
+    @Accessor("SALT")
+    String getSalt();
+
+    @Mutator("SALT")
+    void setSalt(String salt);
+
+    @NotNull
     @Accessor("URL")
     String getUrl();
 
     @Mutator("URL")
     void setUrl(String url);
+
+    @Accessor("BUILD_CONFIG_ID")
+    String getBuildConfigId();
+
+    @Mutator("BUILD_CONFIG_ID")
+    void setBuildConfigId(String buildConfigId);
 
     @Accessor("BUILD_CONFIG_NAME")
     String getBuildConfigName();

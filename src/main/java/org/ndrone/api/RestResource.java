@@ -87,7 +87,14 @@ public class RestResource
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        teamCityService.save(teamCity);
+        try
+        {
+            teamCityService.save(teamCity);
+        }
+        catch (Exception e)
+        {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
         return Response.status(Response.Status.OK).build();
     }
 

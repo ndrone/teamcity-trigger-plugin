@@ -41,7 +41,8 @@ public class TeamCityTriggerConfigDaoTest
     @Test
     public void saveFindGetUpdateDelete()
     {
-        TeamCityTriggerConfiguration save = dao.save(1, "1", "test", "test", "test", "test");
+        TeamCityTriggerConfiguration save = dao.save(1, "test", "test", "test", "test", "1",
+            "test");
         Assert.assertNotNull(save.getID());
 
         Assert.assertEquals(1, dao.find(1).length);
