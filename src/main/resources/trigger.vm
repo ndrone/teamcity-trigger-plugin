@@ -13,6 +13,7 @@
   <form id="teamcityForm" class="aui">
       <input id="id" name="id" type="hidden" value="$repository.id"/>
       <input id="buildConfigId" name="buildConfigId" type="hidden" value="$!teamcity.buildConfigId"/>
+      <input id="buildConfigName" name="buildConfigName" type="hidden" value="$!teamcity.buildConfigName"/>
       <div class="field-group">
           <label for="username">
             $i18n.getText("teamcity-trigger.username.label")
@@ -52,7 +53,7 @@
                 $i18n.getText("teamcity-trigger.buildConfig.label")
               </label>
               <select id="buildConfig" class="text">
-                  <option value="$!teamcity.buildConfigId">$!teamcity.buildConfigId</option>
+                  <option value="$!teamcity.buildConfigId">$!teamcity.buildConfigName</option>
               </select>
           </div>
           <div class="field-group">

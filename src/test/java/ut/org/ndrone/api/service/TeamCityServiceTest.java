@@ -44,6 +44,7 @@ public class TeamCityServiceTest
         Assert.assertNull(teamCity.getUsername());
         Assert.assertNull(teamCity.getPassword());
         Assert.assertNull(teamCity.getUrl());
+        Assert.assertNull(teamCity.getBuildConfigName());
     }
 
     @Test
@@ -59,6 +60,7 @@ public class TeamCityServiceTest
         Assert.assertEquals("test", teamCity.getUsername());
         Assert.assertEquals("test", teamCity.getPassword());
         Assert.assertEquals("test", teamCity.getUrl());
+        Assert.assertEquals("test", teamCity.getBuildConfigName());
     }
 
     @Test
@@ -87,9 +89,9 @@ public class TeamCityServiceTest
         setupNoConfigurations();
 
         service.save(new TeamCity.Builder().withId("1").withBuildConfigId("1").withUsername("test")
-            .withPassword("test").withUrl("test").build());
+            .withPassword("test").withUrl("test").withBuildConfigName("test").build());
         Mockito.verify(dao, Mockito.times(1)).save(Mockito.eq(1), Mockito.eq("1"),
-            Mockito.eq("test"), Mockito.eq("test"), Mockito.eq("test"));
+            Mockito.eq("test"), Mockito.eq("test"), Mockito.eq("test"), Mockito.eq("test"));
         Mockito.verify(dao, Mockito.never())
             .update(Mockito.any(TeamCityTriggerConfiguration.class));
     }
@@ -100,9 +102,9 @@ public class TeamCityServiceTest
         setupConfigurations();
 
         service.save(new TeamCity.Builder().withId("1").withBuildConfigId("1").withUsername("test")
-            .withPassword("test").withUrl("test").build());
+            .withPassword("test").withUrl("test").withBuildConfigName("test").build());
         Mockito.verify(dao, Mockito.never()).save(Mockito.anyInt(), Mockito.anyString(),
-            Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+            Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         Mockito.verify(dao, Mockito.never())
             .update(Mockito.any(TeamCityTriggerConfiguration.class));
     }
@@ -113,9 +115,9 @@ public class TeamCityServiceTest
         setupConfigurations();
 
         service.save(new TeamCity.Builder().withId("1").withBuildConfigId("2").withUsername("test")
-            .withPassword("test").withUrl("test").build());
+            .withPassword("test").withUrl("test").withBuildConfigName("test").build());
         Mockito.verify(dao, Mockito.never()).save(Mockito.anyInt(), Mockito.anyString(),
-            Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+            Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         Mockito.verify(dao, Mockito.times(1))
             .update(Mockito.any(TeamCityTriggerConfiguration.class));
     }
@@ -141,6 +143,7 @@ public class TeamCityServiceTest
         Mockito.when(configuration.getUsername()).thenReturn("test");
         Mockito.when(configuration.getSecret()).thenReturn("test");
         Mockito.when(configuration.getUrl()).thenReturn("test");
+        Mockito.when(configuration.getBuildConfigName()).thenReturn("test");
         return configuration;
     }
 }

@@ -37,12 +37,12 @@ public class TeamCityTriggerConfigDao
     }
 
     public TeamCityTriggerConfiguration save(int reposId, String buildConfigId, String username,
-        String secret, String url)
+        String secret, String url, String buildConfigName)
     {
         return activeObjects.create(TeamCityTriggerConfiguration.class,
             new DBParam("REPOS_ID", reposId), new DBParam("BUILD_CONFIG_ID", buildConfigId),
             new DBParam("USERNAME", username), new DBParam("SECRET", secret),
-            new DBParam("URL", url));
+            new DBParam("URL", url), new DBParam("BUILD_CONFIG_NAME", buildConfigName));
     }
 
     public void update(TeamCityTriggerConfiguration object)

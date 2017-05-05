@@ -22,6 +22,8 @@ public final class TeamCity
     private String url;
     @XmlElement
     private String buildConfigId;
+    @XmlElement
+    private String buildConfigName;
 
     public TeamCity()
     {
@@ -34,6 +36,7 @@ public final class TeamCity
         setPassword(builder.password);
         setUrl(builder.url);
         setBuildConfigId(builder.buildConfigId);
+        setBuildConfigName(builder.buildConfigName);
     }
 
     public String getId()
@@ -86,13 +89,22 @@ public final class TeamCity
         this.buildConfigId = buildConfigId;
     }
 
+    public String getBuildConfigName()
+    {
+        return buildConfigName;
+    }
+
+    public void setBuildConfigName(String buildConfigName)
+    {
+        this.buildConfigName = buildConfigName;
+    }
+
     @Override
     public boolean equals(Object o)
     {
         if (this == o)
             return true;
-        if (o == null
-            || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass())
             return false;
 
         TeamCity teamCity = (TeamCity) o;
@@ -105,27 +117,22 @@ public final class TeamCity
             return false;
         if (!url.equals(teamCity.url))
             return false;
-        return buildConfigId != null
-            ? buildConfigId.equals(teamCity.buildConfigId) : teamCity.buildConfigId == null;
+        if (buildConfigId != null ? !buildConfigId.equals(teamCity.buildConfigId) :
+                teamCity.buildConfigId != null)
+            return false;
+        return buildConfigName != null ? buildConfigName.equals(teamCity.buildConfigName) :
+                teamCity.buildConfigName == null;
     }
 
     @Override
     public int hashCode()
     {
         int result = id.hashCode();
-        result = 31
-            * result
-            + username.hashCode();
-        result = 31
-            * result
-            + password.hashCode();
-        result = 31
-            * result
-            + url.hashCode();
-        result = 31
-            * result
-            + (buildConfigId != null
-                ? buildConfigId.hashCode() : 0);
+        result = 31 * result + username.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + url.hashCode();
+        result = 31 * result + (buildConfigId != null ? buildConfigId.hashCode() : 0);
+        result = 31 * result + (buildConfigName != null ? buildConfigName.hashCode() : 0);
         return result;
     }
 
@@ -136,6 +143,7 @@ public final class TeamCity
         private String password;
         private String url;
         private String buildConfigId;
+        private String buildConfigName;
 
         public Builder()
         {
@@ -168,6 +176,12 @@ public final class TeamCity
         public Builder withBuildConfigId(String val)
         {
             buildConfigId = val;
+            return this;
+        }
+
+        public Builder withBuildConfigName(String val)
+        {
+            buildConfigName = val;
             return this;
         }
 

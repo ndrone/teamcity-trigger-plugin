@@ -54,7 +54,8 @@
     }
 
     function save() {
-        AJS.$("#buildConfigId").val(AJS.$("#buildConfig").val());
+        AJS.$("#buildConfigId").val(AJS.$("#buildConfig option:selected").val());
+        AJS.$("#buildConfigName").val(AJS.$("#buildConfig option:selected").text());
         AJS.$.ajax({
             url: url + "save",
             type: "POST",
@@ -90,6 +91,7 @@
                 AJS.$("#alerts").empty();
                 AJS.$("#alerts").removeClass("error");
                 AJS.$("#alerts").removeClass("success");
+                AJS.$('html,body').css('cursor', 'wait');
             },
             error: function(jqXHR) {
                 console.log(jqXHR.responseText);
@@ -97,7 +99,14 @@
                 AJS.$("#alerts").text("Could not connect please try again.")
             },
             success: function(data) {
-                console.log(data);
+                AJS.$("#buildConfig").empty();
+                data.buildType.forEach(function (item) {
+                    AJS.$("#buildConfig").append(AJS.$('<option>', {
+                        value: item.id,
+                        text: item.projectName + " :: " + item.name
+                    }));
+                });
+                AJS.$('html,body').css('cursor', 'initial');
             }
         });
     }

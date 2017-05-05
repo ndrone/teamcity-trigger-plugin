@@ -47,4 +47,10 @@ public interface TeamCityTriggerConfiguration extends Entity
 
     @Mutator("URL")
     void setUrl(String url);
+
+    @Accessor("BUILD_CONFIG_NAME")
+    String getBuildConfigName();
+
+    @Mutator("BUILD_CONFIG_NAME")
+    void setBuildConfigName(String buildConfigName);
 }

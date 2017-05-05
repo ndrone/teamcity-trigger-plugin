@@ -42,7 +42,8 @@ public class TeamCityServiceImpl implements TeamCityService
         return new TeamCity.Builder().withId(String.valueOf(configuration.getReposId()))
             .withBuildConfigId(configuration.getBuildConfigId())
             .withUsername(configuration.getUsername()).withPassword(configuration.getSecret())
-            .withUrl(configuration.getUrl()).build();
+            .withUrl(configuration.getUrl()).withBuildConfigName(configuration.getBuildConfigName())
+            .build();
     }
 
     public void save(TeamCity teamCity)
@@ -52,7 +53,8 @@ public class TeamCityServiceImpl implements TeamCityService
         {
             // object doesn't exist yet
             dao.save(Integer.parseInt(teamCity.getId()), teamCity.getBuildConfigId(),
-                teamCity.getUsername(), teamCity.getPassword(), teamCity.getUrl());
+                teamCity.getUsername(), teamCity.getPassword(), teamCity.getUrl(),
+                teamCity.getBuildConfigName());
         }
         else
         {
@@ -66,6 +68,7 @@ public class TeamCityServiceImpl implements TeamCityService
                 configuration.setUsername(teamCity.getUsername());
                 configuration.setSecret(teamCity.getPassword());
                 configuration.setUrl(teamCity.getUrl());
+                configuration.setBuildConfigName(teamCity.getBuildConfigName());
                 dao.update(configuration);
             }
         }
