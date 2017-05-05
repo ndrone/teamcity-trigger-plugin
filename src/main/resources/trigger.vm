@@ -51,7 +51,9 @@
               <label for="buildConfig">
                 $i18n.getText("teamcity-trigger.buildConfig.label")
               </label>
-              <input id="buildConfig" type="text" class="text" value="$!teamcity.buildConfigId"/>
+              <select id="buildConfig" class="text">
+                  <option value="$!teamcity.buildConfigId">$!teamcity.buildConfigId</option>
+              </select>
           </div>
           <div class="field-group">
               <input id="update" type="button" class="aui-button aui-button-primary"

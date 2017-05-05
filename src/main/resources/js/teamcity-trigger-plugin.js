@@ -20,6 +20,9 @@
         AJS.$("#delete").click(function () {
 
         });
+        AJS.$("#buildConfig").click(function () {
+           fetchBuildConfigs();
+        });
         if(AJS.$("#buildConfigId").val().length > 0 ) {
             AJS.$("#buildConfigDiv").show();
         }
@@ -35,6 +38,7 @@
             beforeSend: function () {
                 AJS.$("#alerts").empty();
                 AJS.$("#alerts").removeClass("error");
+                AJS.$("#alerts").removeClass("success");
             },
             error: function(jqXHR) {
                 console.log(jqXHR.responseText);
@@ -46,8 +50,6 @@
                 AJS.$("#alerts").text("Connection Successful.");
                 AJS.$("#buildConfigDiv").show();
             }
-        }).done(function () {
-            console.log("done");
         });
     }
 
@@ -62,6 +64,7 @@
             beforeSend: function () {
                 AJS.$("#alerts").empty();
                 AJS.$("#alerts").removeClass("error");
+                AJS.$("#alerts").removeClass("success");
             },
             error: function(jqXHR) {
                 console.log(jqXHR.responseText);
@@ -73,8 +76,29 @@
                 AJS.$("#alerts").text("Save Successful.");
                 AJS.$("#buildConfigDiv").show();
             }
-        }).done(function () {
-            console.log("done");
+        });
+    }
+
+    function fetchBuildConfigs() {
+        AJS.$.ajax({
+            url: url + "fetchBuilds",
+            type: "POST",
+            contentType: "application/json",
+            data: toJSONString(document.getElementById("teamcityForm")),
+            processData: false,
+            beforeSend: function () {
+                AJS.$("#alerts").empty();
+                AJS.$("#alerts").removeClass("error");
+                AJS.$("#alerts").removeClass("success");
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR.responseText);
+                AJS.$("#alerts").addClass("error");
+                AJS.$("#alerts").text("Could not connect please try again.")
+            },
+            success: function(data) {
+                console.log(data);
+            }
         });
     }
 

@@ -5,10 +5,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import org.ndrone.Utils;
 import org.ndrone.api.service.TeamCityService;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +13,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -41,7 +39,8 @@ public class RestResource
         this.restTemplate = new RestTemplate();
     }
 
-    public RestResource(UserManager userManager, TeamCityService teamCityService, RestTemplate restTemplate)
+    public RestResource(UserManager userManager, TeamCityService teamCityService,
+        RestTemplate restTemplate)
     {
         this.userManager = userManager;
         this.teamCityService = teamCityService;
@@ -90,5 +89,38 @@ public class RestResource
         }
         teamCityService.save(teamCity);
         return Response.status(Response.Status.OK).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/fetchBuilds")
+    public Response fetchBuilds(final TeamCity teamCity)
+    {
+        if (!Utils.validateUser(userManager))
+        {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        HttpStatus statusCode;
+        BuildTypes buildTypes;
+        HttpHeaders headers = Utils.createHeaders(teamCity.getUsername(), teamCity.getPassword());
+        headers.add("Accept", "application/json");
+        try
+        {
+            ResponseEntity<BuildTypes> response = restTemplate
+                .exchange(Utils.chopTrailingSlash(teamCity.getUrl())
+                    + "/httpAuth/app/rest/buildTypes", HttpMethod.GET,
+                    new HttpEntity<Object>(headers), BuildTypes.class);
+            statusCode = response.getStatusCode();
+            buildTypes = response.getBody();
+        }
+        catch (HttpClientErrorException e)
+        {
+            statusCode = e.getStatusCode();
+            buildTypes = new BuildTypes();
+        }
+
+        return Response.status(statusCode.value()).entity(buildTypes).build();
     }
 }
