@@ -105,4 +105,36 @@ public class TeamCityServiceImpl implements TeamCityService
             dao.delete(objects[0]);
         }
     }
+
+    public String comparePassword(TeamCity teamCity)
+        throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
+        NoSuchAlgorithmException, NoSuchPaddingException
+    {
+        TeamCityTriggerConfiguration[] teamCityTriggerConfigurations = dao
+            .find(Integer.parseInt(teamCity.getId()));
+        if (teamCityTriggerConfigurations.length == 0)
+        {
+            return teamCity.getPassword();
+        }
+        TeamCity databaseObject = buildTeamCity(teamCityTriggerConfigurations[0]);
+        if (databaseObject.equals(teamCity))
+        {
+            // objects are equal return decrypted password
+            return SecurityUtils.decrypt(teamCityTriggerConfigurations[0].getSalt(),
+                teamCityTriggerConfigurations[0].getSecret());
+        }
+        else
+        {
+            // objects are different but is the password
+            if (teamCityTriggerConfigurations[0].getSecret().equals(teamCity.getPassword()))
+            {
+                return SecurityUtils.decrypt(teamCityTriggerConfigurations[0].getSalt(),
+                    teamCityTriggerConfigurations[0].getSecret());
+            }
+            else
+            {
+                return teamCity.getPassword();
+            }
+        }
+    }
 }

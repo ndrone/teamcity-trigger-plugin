@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.ndrone.SecurityUtils;
 import org.ndrone.api.TeamCity;
 import org.ndrone.api.dao.TeamCityTriggerConfigDao;
 import org.ndrone.api.dao.TeamCityTriggerConfiguration;
@@ -58,13 +59,20 @@ public class TeamCityServiceTest
     {
         Repository repository = Mockito.mock(Repository.class);
         Mockito.when(repository.getId()).thenReturn(1);
-        setupConfigurations();
+        try
+        {
+            setupConfigurations();
+        }
+        catch (Exception e)
+        {
+            Assert.fail();
+        }
 
         TeamCity teamCity = service.find(repository);
         Assert.assertEquals("1", teamCity.getId());
         Assert.assertEquals("1", teamCity.getBuildConfigId());
         Assert.assertEquals("test", teamCity.getUsername());
-        Assert.assertEquals("test", teamCity.getPassword());
+        Assert.assertNotNull(teamCity.getPassword());
         Assert.assertEquals("test", teamCity.getUrl());
         Assert.assertEquals("test", teamCity.getBuildConfigName());
     }
@@ -82,7 +90,14 @@ public class TeamCityServiceTest
     @Test
     public void delete()
     {
-        setupConfigurations();
+        try
+        {
+            setupConfigurations();
+        }
+        catch (Exception e)
+        {
+            Assert.fail();
+        }
 
         service.delete(new TeamCity.Builder().withId("1").build());
         Mockito.verify(dao, Mockito.times(1))
@@ -111,10 +126,11 @@ public class TeamCityServiceTest
         throws BadPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException,
         IllegalBlockSizeException, NoSuchPaddingException, InvalidKeyException
     {
+        Repository repository = Mockito.mock(Repository.class);
+        Mockito.when(repository.getId()).thenReturn(1);
         setupConfigurations();
 
-        service.save(new TeamCity.Builder().withId("1").withUsername("test").withPassword("test")
-            .withUrl("test").withBuildConfigId("1").withBuildConfigName("test").build());
+        service.save(service.find(repository));
 
         Mockito.verify(dao, Mockito.never()).save(Mockito.anyInt(), Mockito.anyString(),
             Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
@@ -140,12 +156,43 @@ public class TeamCityServiceTest
             .update(Mockito.any(TeamCityTriggerConfiguration.class));
     }
 
+    @Test
+    public void comparePasswordNoDatabase()
+        throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException,
+        IllegalBlockSizeException, NoSuchPaddingException
+    {
+        setupNoConfigurations();
+
+        Assert.assertEquals("test", service
+            .comparePassword(new TeamCity.Builder().withId("1").withPassword("test").build()));
+    }
+
+    @Test
+    public void comparePasswordChanged()
+    {
+        try
+        {
+            setupConfigurations();
+
+            TeamCity teamCity = new TeamCity.Builder().withId("1").withUsername("test")
+                .withPassword("changed").withUrl("test").withBuildConfigId("test")
+                .withBuildConfigName("test").build();
+            Assert.assertEquals("changed", service.comparePassword(teamCity));
+        }
+        catch (Exception e)
+        {
+            Assert.fail();
+        }
+    }
+
     private void setupNoConfigurations()
     {
         Mockito.when(dao.find(Mockito.anyInt())).thenReturn(new TeamCityTriggerConfiguration[]{});
     }
 
     private void setupConfigurations()
+        throws BadPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException,
+        IllegalBlockSizeException, NoSuchPaddingException, InvalidKeyException
     {
         TeamCityTriggerConfiguration teamCityTriggerConfiguration = mocked();
         Mockito.when(dao.find(Mockito.eq(1))).thenReturn(new TeamCityTriggerConfiguration[]{
@@ -153,14 +200,21 @@ public class TeamCityServiceTest
     }
 
     private TeamCityTriggerConfiguration mocked()
+        throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException,
+        BadPaddingException, InvalidAlgorithmParameterException, NoSuchPaddingException
     {
         TeamCityTriggerConfiguration configuration = Mockito
             .mock(TeamCityTriggerConfiguration.class);
+
         Mockito.when(configuration.getReposId()).thenReturn(1);
-        Mockito.when(configuration.getBuildConfigId()).thenReturn("1");
         Mockito.when(configuration.getUsername()).thenReturn("test");
-        Mockito.when(configuration.getSecret()).thenReturn("test");
+
+        Mockito.when(configuration.getSecret())
+            .thenReturn(SecurityUtils.encrypt(SecurityUtils.generateSalt(), "test"));
+
         Mockito.when(configuration.getUrl()).thenReturn("test");
+
+        Mockito.when(configuration.getBuildConfigId()).thenReturn("1");
         Mockito.when(configuration.getBuildConfigName()).thenReturn("test");
         return configuration;
     }

@@ -1,5 +1,7 @@
 package org.ndrone.event;
 
+import com.atlassian.bitbucket.event.repository.RepositoryPushEvent;
+import com.atlassian.event.api.EventListener;
 import org.ndrone.SecurityUtils;
 import org.ndrone.Utils;
 import org.ndrone.api.dao.TeamCityTriggerConfiguration;
@@ -10,9 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import com.atlassian.bitbucket.event.repository.RepositoryPushEvent;
-import com.atlassian.event.api.EventListener;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -44,12 +43,13 @@ public class PushEventListener
 
     @EventListener
     public void pushEvent(RepositoryPushEvent pushEvent)
-            throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
-            NoSuchAlgorithmException, NoSuchPaddingException
+        throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
+        NoSuchAlgorithmException, NoSuchPaddingException
     {
         TeamCityTriggerConfiguration configuration = teamCityService
             .getConfiguration(pushEvent.getRepository());
-        if (configuration.getBuildConfigId() != null)
+        if (configuration != null
+            && configuration.getBuildConfigId() != null)
         {
             HttpHeaders headers = Utils.createHeaders(configuration.getUsername(),
                 SecurityUtils.decrypt(configuration.getSalt(), configuration.getSecret()));

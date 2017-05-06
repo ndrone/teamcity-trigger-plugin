@@ -27,4 +27,13 @@ public interface TeamCityService
             BadPaddingException, InvalidAlgorithmParameterException, NoSuchPaddingException;
 
     void delete(TeamCity teamCity);
+
+    /**
+     * Compares the password that's stored in the database if it is
+     * @param teamCity object that contains the password to compare to
+     * @return the password that should be used connecting to teamcity decrypted
+     */
+    String comparePassword(TeamCity teamCity)
+            throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
+            NoSuchAlgorithmException, NoSuchPaddingException;
 }

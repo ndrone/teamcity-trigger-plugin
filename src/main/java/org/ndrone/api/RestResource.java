@@ -63,16 +63,19 @@ public class RestResource
         {
             ResponseEntity<String> response = restTemplate
                 .exchange(Utils.chopTrailingSlash(teamCity.getUrl())
-                    + "/httpAuth/app/rest/latest",
-                    HttpMethod.GET,
-                    new HttpEntity<Object>(
-                        Utils.createHeaders(teamCity.getUsername(), teamCity.getPassword())),
+                    + "/httpAuth/app/rest/latest", HttpMethod.GET,
+                    new HttpEntity<Object>(Utils.createHeaders(teamCity.getUsername(),
+                        teamCityService.comparePassword(teamCity))),
                     String.class);
             statusCode = response.getStatusCode();
         }
         catch (HttpClientErrorException e)
         {
             statusCode = e.getStatusCode();
+        }
+        catch (Exception e)
+        {
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
         return Response.status(statusCode.value()).build();
@@ -111,7 +114,17 @@ public class RestResource
 
         HttpStatus statusCode;
         BuildTypes buildTypes;
-        HttpHeaders headers = Utils.createHeaders(teamCity.getUsername(), teamCity.getPassword());
+        HttpHeaders headers;
+        try
+        {
+            headers = Utils.createHeaders(teamCity.getUsername(),
+                teamCityService.comparePassword(teamCity));
+        }
+        catch (Exception e)
+        {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
         headers.add("Accept", "application/json");
         try
         {
