@@ -20,7 +20,7 @@
         AJS.$("#delete").click(function () {
             deleteConfig();
         });
-        AJS.$("#buildConfig").click(function () {
+        AJS.$("#refresh").click(function () {
            fetchBuildConfigs();
         });
         if(AJS.$("#buildConfigId").val().length > 0 ) {
@@ -48,6 +48,7 @@
             success: function() {
                 AJS.$("#alerts").addClass("success");
                 AJS.$("#alerts").text("Connection Successful.");
+                fetchBuildConfigs();
                 AJS.$("#buildConfigDiv").show();
             }
         });
@@ -81,6 +82,7 @@
     }
 
     function fetchBuildConfigs() {
+        var selectedBuildId = AJS.$("#buildConfig option:selected").val();
         AJS.$.ajax({
             url: url + "fetchBuilds",
             type: "POST",
@@ -103,7 +105,8 @@
                 data.buildType.forEach(function (item) {
                     AJS.$("#buildConfig").append(AJS.$('<option>', {
                         value: item.id,
-                        text: item.projectName + " :: " + item.name
+                        text: item.projectName + " :: " + item.name,
+                        selected: item.id === selectedBuildId
                     }));
                 });
                 AJS.$('html,body').css('cursor', 'initial');
