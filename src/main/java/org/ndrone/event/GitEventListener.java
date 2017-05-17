@@ -1,7 +1,10 @@
 package org.ndrone.event;
 
+import com.atlassian.bitbucket.event.pull.PullRequestEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryRefsChangedEvent;
+import com.atlassian.bitbucket.pull.PullRequestAction;
 import com.atlassian.bitbucket.repository.RefChange;
+import com.atlassian.bitbucket.repository.RefChangeType;
 import com.atlassian.event.api.EventListener;
 import org.ndrone.SecurityUtils;
 import org.ndrone.Utils;
@@ -56,11 +59,7 @@ public class GitEventListener
         if (configuration != null
             && configuration.getBuildConfigId() != null)
         {
-            HttpHeaders headers = Utils.createHeaders(configuration.getUsername(),
-                SecurityUtils.decrypt(configuration.getSalt(), configuration.getSecret()));
-            headers.add("Accept", "application/json");
-            headers.setOrigin(configuration.getUrl());
-            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpHeaders headers = getHttpHeaders(configuration);
 
             for (RefChange refChange : event.getRefChanges())
             {
@@ -68,37 +67,83 @@ public class GitEventListener
                     refChange.getType().name(), refChange.getRef().getId(),
                     refChange.getRef().getDisplayId(), refChange.getRef().getType().toString());
 
-                if (triggerBuild(refChange))
+                if (validForTrigger(refChange))
                 {
                     log.info("Trigger a build");
                     BuildType buildType = new BuildType(configuration.getBuildConfigId());
                     Build build = new Build(refChange.getRef().getDisplayId(), buildType);
-                    try
-                    {
-                        ResponseEntity<String> exchange = restTemplate
-                            .exchange(Utils.chopTrailingSlash(configuration.getUrl())
-                                + "/httpAuth/app/rest/buildQueue", HttpMethod.POST,
-                                new HttpEntity<Build>(build, headers), String.class);
-
-                        if (!exchange.getStatusCode().is2xxSuccessful())
-                        {
-                            log.error("Http status: {} message: {}", exchange.getStatusCode().value(),
-                                    exchange.getBody());
-                        }
-                    }
-                    catch (RestClientException e)
-                    {
-                        log.error("Error message: {}", e.getMessage());
-                    }
+                    queueBuild(configuration, headers, build);
                 }
             }
 
         }
     }
 
-    private boolean triggerBuild(RefChange refChange)
+    @EventListener
+    public void pullRequestEvent(PullRequestEvent event)
+        throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException,
+        NoSuchAlgorithmException, NoSuchPaddingException
     {
-        return "UPDATE".equals(refChange.getType().name())
+        log.info("PullRequestOpenedEvent triggering");
+        TeamCityTriggerConfiguration configuration = teamCityService
+            .getConfiguration(event.getPullRequest().getToRef().getRepository());
+        if (configuration != null
+            && configuration.getBuildConfigId() != null && validForTrigger(event))
+        {
+            HttpHeaders headers = getHttpHeaders(configuration);
+
+            BuildType buildType = new BuildType(configuration.getBuildConfigId());
+            Build build = new Build("pull-requests/"
+                + event.getPullRequest().getId() + "/from", buildType);
+            queueBuild(configuration, headers, build);
+        }
+    }
+
+    private void queueBuild(TeamCityTriggerConfiguration configuration, HttpHeaders headers,
+        Build build)
+    {
+        try
+        {
+            ResponseEntity<String> exchange = restTemplate
+                .exchange(Utils.chopTrailingSlash(configuration.getUrl())
+                    + "/httpAuth/app/rest/buildQueue", HttpMethod.POST,
+                    new HttpEntity<Build>(build, headers), String.class);
+
+            if (!exchange.getStatusCode().is2xxSuccessful())
+            {
+                log.error("Http status: {} message: {}", exchange.getStatusCode().value(),
+                    exchange.getBody());
+            }
+        }
+        catch (RestClientException e)
+        {
+            log.error("Error message: {}", e.getMessage());
+        }
+    }
+
+    private HttpHeaders getHttpHeaders(TeamCityTriggerConfiguration configuration)
+        throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
+        BadPaddingException, IllegalBlockSizeException
+    {
+        HttpHeaders headers = Utils.createHeaders(configuration.getUsername(),
+            SecurityUtils.decrypt(configuration.getSalt(), configuration.getSecret()));
+        headers.add("Accept", "application/json");
+        headers.setOrigin(configuration.getUrl());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
+    }
+
+    private boolean validForTrigger(RefChange refChange)
+    {
+        return RefChangeType.UPDATE.equals(refChange.getType())
             && "BRANCH".equals(refChange.getRef().getType().toString());
+    }
+
+    private boolean validForTrigger(PullRequestEvent event)
+    {
+        return event.getPullRequest().getId() > 0
+            && (PullRequestAction.OPENED.equals(event.getAction())
+                || PullRequestAction.REOPENED.equals(event.getAction())
+                || PullRequestAction.UPDATED.equals(event.getAction()));
     }
 }
