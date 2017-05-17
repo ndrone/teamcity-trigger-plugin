@@ -55,6 +55,8 @@
               <select id="buildConfig" class="text">
                   <option value="$!teamcity.buildConfigId">$!teamcity.buildConfigName</option>
               </select>
+              <input id="refresh" type="button" class="aui-button aui-button-primary"
+                     value="$i18n.getText("teamcity-trigger.buildConfig.refresh.button")"/>
           </div>
           <div class="field-group">
               <input id="update" type="button" class="aui-button aui-button-primary"
