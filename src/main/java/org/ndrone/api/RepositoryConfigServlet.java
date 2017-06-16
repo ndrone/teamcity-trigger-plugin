@@ -44,22 +44,29 @@ public class RepositoryConfigServlet extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
+        Map<String, Object> contextMap = new HashMap<String, Object>();
         if (!Utils.validateUser(userManager))
         {
-            return;
+            contextMap.put("errorMessage", "User doesn't have enough permission to edit settings.");
+            renderer.render("error.vm", contextMap, resp.getWriter());
         }
-
-        Repository repository = getRepository(req);
-        if (repository == null)
+        else
         {
-            return;
-        }
-        Map<String, Object> contextMap = new HashMap<String, Object>();
-        contextMap.put("repository", repository);
-        contextMap.put("teamcity", teamCityService.find(repository));
+            Repository repository = getRepository(req);
+            if (repository == null)
+            {
+                contextMap.put("errorMessage", "Repository not found!");
+                renderer.render("error.vm", contextMap, resp.getWriter());
+            }
+            else
+            {
+                contextMap.put("repository", repository);
+                contextMap.put("teamcity", teamCityService.find(repository));
 
-        resp.setContentType("text/html;charset=utf-8");
-        renderer.render("trigger.vm", contextMap, resp.getWriter());
+                resp.setContentType("text/html;charset=utf-8");
+                renderer.render("trigger.vm", contextMap, resp.getWriter());
+            }
+        }
 
     }
 

@@ -27,8 +27,9 @@ public final class Utils
     public static boolean validateUser(UserManager userManager)
     {
         UserProfile user = userManager.getRemoteUser();
-        return !(user == null
-            || !userManager.isSystemAdmin(user.getUserKey()));
+
+        return user != null && (userManager.isSystemAdmin(user.getUserKey())
+            || userManager.isAdmin(user.getUserKey()));
     }
 
     public static String chopTrailingSlash(String url)
