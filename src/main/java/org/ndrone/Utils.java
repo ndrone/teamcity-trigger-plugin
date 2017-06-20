@@ -2,6 +2,8 @@ package org.ndrone;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import com.atlassian.sal.api.user.UserManager;
@@ -13,6 +15,8 @@ import com.atlassian.sal.core.util.Assert;
  */
 public final class Utils
 {
+    private static final Logger log = LoggerFactory.getLogger(Utils.class);
+
     public static HttpHeaders createHeaders(final String username, final String password)
     {
         HttpHeaders headers = new HttpHeaders();
@@ -28,8 +32,22 @@ public final class Utils
     {
         UserProfile user = userManager.getRemoteUser();
 
-        return user != null && (userManager.isSystemAdmin(user.getUserKey())
-            || userManager.isAdmin(user.getUserKey()));
+        if (user == null)
+        {
+            log.error("User is null.");
+            return false;
+        }
+        else if (userManager.isSystemAdmin(user.getUserKey()) || userManager.isAdmin(user.getUserKey()))
+        {
+            log.info("Valid user");
+            return true;
+        }
+        else
+        {
+            log.info("User doesn't have correct permissions");
+            log.debug("User: {} ", user.getUsername());
+            return false;
+        }
     }
 
     public static String chopTrailingSlash(String url)

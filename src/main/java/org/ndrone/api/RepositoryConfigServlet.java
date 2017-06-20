@@ -5,7 +5,6 @@ import com.atlassian.bitbucket.repository.RepositoryService;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import org.ndrone.Utils;
 import org.ndrone.api.service.TeamCityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,29 +43,33 @@ public class RepositoryConfigServlet extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
+        resp.setContentType("text/html;charset=utf-8");
         Map<String, Object> contextMap = new HashMap<String, Object>();
-        if (!Utils.validateUser(userManager))
+
+        Repository repository = getRepository(req);
+        if (repository == null)
         {
-            contextMap.put("errorMessage", "User doesn't have enough permission to edit settings.");
+            contextMap.put("errorMessage", "Repository not found!");
             renderer.render("error.vm", contextMap, resp.getWriter());
         }
         else
         {
-            Repository repository = getRepository(req);
-            if (repository == null)
-            {
-                contextMap.put("errorMessage", "Repository not found!");
-                renderer.render("error.vm", contextMap, resp.getWriter());
-            }
-            else
-            {
-                contextMap.put("repository", repository);
-                contextMap.put("teamcity", teamCityService.find(repository));
+            contextMap.put("repository", repository);
+            contextMap.put("teamcity", teamCityService.find(repository));
 
-                resp.setContentType("text/html;charset=utf-8");
-                renderer.render("trigger.vm", contextMap, resp.getWriter());
-            }
+            renderer.render("info.vm", contextMap, resp.getWriter());
+//            renderer.render("trigger.vm", contextMap, resp.getWriter());
         }
+
+        // if (!Utils.validateUser(userManager))
+        // {
+        // contextMap.put("errorMessage", "User doesn't have enough permission to edit settings.");
+        // renderer.render("error.vm", contextMap, resp.getWriter());
+        // }
+        // else
+        // {
+        
+        // }
 
     }
 
