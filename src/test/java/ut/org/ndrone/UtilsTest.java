@@ -1,12 +1,8 @@
 package ut.org.ndrone;
 
-import com.atlassian.sal.api.user.UserKey;
-import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.sal.api.user.UserProfile;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.ndrone.Utils;
 import org.springframework.http.HttpHeaders;
@@ -48,55 +44,5 @@ public class UtilsTest
     {
         Assert.assertEquals("test", Utils.chopTrailingSlash("test"));
         Assert.assertEquals("test", Utils.chopTrailingSlash("test/"));
-    }
-
-    @Test
-    public void validateNullUser()
-    {
-        UserManager userManager = Mockito.mock(UserManager.class);
-        Mockito.when(userManager.getRemoteUser()).thenReturn(null);
-
-        Assert.assertFalse("null users return false", Utils.validateUser(userManager));
-    }
-
-    @Test
-    public void validateNonAdminUsers()
-    {
-        UserManager userManager = Mockito.mock(UserManager.class);
-        UserProfile userProfile = Mockito.mock(UserProfile.class);
-
-        Mockito.when(userProfile.getUserKey()).thenReturn(new UserKey("test"));
-        Mockito.when(userManager.getRemoteUser()).thenReturn(userProfile);
-        Mockito.when(userManager.isSystemAdmin(Mockito.any(UserKey.class))).thenReturn(false);
-        Mockito.when(userManager.isAdmin(Mockito.any(UserKey.class))).thenReturn(false);
-
-        Assert.assertFalse("Non admins return false", Utils.validateUser(userManager));
-    }
-
-    @Test
-    public void validateSystemAdmin()
-    {
-        UserManager userManager = Mockito.mock(UserManager.class);
-        UserProfile userProfile = Mockito.mock(UserProfile.class);
-
-        Mockito.when(userProfile.getUserKey()).thenReturn(new UserKey("test"));
-        Mockito.when(userManager.getRemoteUser()).thenReturn(userProfile);
-        Mockito.when(userManager.isSystemAdmin(Mockito.any(UserKey.class))).thenReturn(true);
-
-        Assert.assertTrue("System admins return true", Utils.validateUser(userManager));
-    }
-
-    @Test
-    public void validateProjectAdmin()
-    {
-        UserManager userManager = Mockito.mock(UserManager.class);
-        UserProfile userProfile = Mockito.mock(UserProfile.class);
-
-        Mockito.when(userProfile.getUserKey()).thenReturn(new UserKey("test"));
-        Mockito.when(userManager.getRemoteUser()).thenReturn(userProfile);
-        Mockito.when(userManager.isSystemAdmin(Mockito.any(UserKey.class))).thenReturn(false);
-        Mockito.when(userManager.isAdmin(Mockito.any(UserKey.class))).thenReturn(true);
-
-        Assert.assertTrue("Non admins return true", Utils.validateUser(userManager));
     }
 }

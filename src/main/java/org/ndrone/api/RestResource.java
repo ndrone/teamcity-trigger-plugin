@@ -1,5 +1,6 @@
 package org.ndrone.api;
 
+import com.atlassian.bitbucket.repository.RepositoryService;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
@@ -25,25 +26,34 @@ import javax.ws.rs.core.Response;
 public class RestResource
 {
     @ComponentImport
-    private final UserManager     userManager;
+    private final UserManager           userManager;
+    @ComponentImport
+    private final RepositoryService     repositoryService;
 
-    private final RestTemplate    restTemplate;
+    private final RestTemplate          restTemplate;
 
-    private final TeamCityService teamCityService;
+    private final TeamCityService       teamCityService;
+    private final UserValidationService userValidationService;
 
     @Inject
-    public RestResource(UserManager userManager, TeamCityService teamCityService)
+    public RestResource(UserManager userManager, RepositoryService repositoryService,
+        TeamCityService teamCityService, UserValidationService userValidationService)
     {
         this.userManager = userManager;
+        this.repositoryService = repositoryService;
         this.teamCityService = teamCityService;
+        this.userValidationService = userValidationService;
         this.restTemplate = new RestTemplate();
     }
 
-    public RestResource(UserManager userManager, TeamCityService teamCityService,
+    public RestResource(UserManager userManager, RepositoryService repositoryService,
+        TeamCityService teamCityService, UserValidationService userValidationService,
         RestTemplate restTemplate)
     {
         this.userManager = userManager;
+        this.repositoryService = repositoryService;
         this.teamCityService = teamCityService;
+        this.userValidationService = userValidationService;
         this.restTemplate = restTemplate;
     }
 
@@ -53,7 +63,7 @@ public class RestResource
     public Response testConnection(final TeamCity teamCity)
     {
 
-        if (!Utils.validateUser(userManager))
+        if (!validateUser(teamCity))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -86,7 +96,7 @@ public class RestResource
     @Path("/save")
     public Response save(final TeamCity teamCity)
     {
-        if (!Utils.validateUser(userManager))
+        if (!validateUser(teamCity))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -107,7 +117,7 @@ public class RestResource
     @Path("/fetchBuilds")
     public Response fetchBuilds(final TeamCity teamCity)
     {
-        if (!Utils.validateUser(userManager))
+        if (!validateUser(teamCity))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -149,12 +159,19 @@ public class RestResource
     @Path("/delete")
     public Response delete(final TeamCity teamCity)
     {
-        if (!Utils.validateUser(userManager))
+        if (!validateUser(teamCity))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
         teamCityService.delete(teamCity);
         return Response.status(Response.Status.OK).build();
+    }
+
+    private boolean validateUser(final TeamCity teamCity)
+    {
+        return userValidationService.isUserRepositoryAdmin(userManager.getRemoteUser(),
+            repositoryService.getById(Integer.parseInt(teamCity.getId())));
+
     }
 }

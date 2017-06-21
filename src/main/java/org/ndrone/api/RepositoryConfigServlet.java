@@ -23,20 +23,23 @@ import java.util.Map;
 @Component
 public class RepositoryConfigServlet extends HttpServlet
 {
-    private final UserManager       userManager;
-    private final RepositoryService repositoryService;
-    private final TemplateRenderer  renderer;
-    private final TeamCityService   teamCityService;
+    private final UserManager           userManager;
+    private final RepositoryService     repositoryService;
+    private final TemplateRenderer      renderer;
+    private final TeamCityService       teamCityService;
+    private final UserValidationService userValidationService;
 
     @Autowired
     public RepositoryConfigServlet(@ComponentImport UserManager userManager,
         @ComponentImport RepositoryService repositoryService,
-        @ComponentImport TemplateRenderer renderer, TeamCityService teamCityService)
+        @ComponentImport TemplateRenderer renderer, TeamCityService teamCityService,
+        UserValidationService userValidationService)
     {
         this.userManager = userManager;
         this.repositoryService = repositoryService;
         this.renderer = renderer;
         this.teamCityService = teamCityService;
+        this.userValidationService = userValidationService;
     }
 
     @Override
@@ -54,22 +57,18 @@ public class RepositoryConfigServlet extends HttpServlet
         }
         else
         {
+            if (!userValidationService.isUserRepositoryAdmin(userManager.getRemoteUser(),
+                repository))
+            {
+                contextMap.put("errorMessage",
+                    "User doesn't have enough permission to edit settings.");
+                renderer.render("error.vm", contextMap, resp.getWriter());
+            }
+
             contextMap.put("repository", repository);
             contextMap.put("teamcity", teamCityService.find(repository));
-
-            renderer.render("info.vm", contextMap, resp.getWriter());
-//            renderer.render("trigger.vm", contextMap, resp.getWriter());
+            renderer.render("trigger.vm", contextMap, resp.getWriter());
         }
-
-        // if (!Utils.validateUser(userManager))
-        // {
-        // contextMap.put("errorMessage", "User doesn't have enough permission to edit settings.");
-        // renderer.render("error.vm", contextMap, resp.getWriter());
-        // }
-        // else
-        // {
-        
-        // }
 
     }
 
