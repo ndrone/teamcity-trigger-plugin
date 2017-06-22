@@ -13,6 +13,8 @@ public final class SecurityUtils
 {
     private static final String AES      = "AES";
     private static final int    KEY_SIZE = 128;
+    private static final int    HEX      = 16;
+    private static final int    BYTE_LEN = 2;
 
     public static String generateSalt() throws NoSuchAlgorithmException
     {
@@ -42,13 +44,11 @@ public final class SecurityUtils
 
     private static String byteArrayToHexString(byte[] b)
     {
-        StringBuffer sb = new StringBuffer(b.length
-            * 2);
+        StringBuilder sb = new StringBuilder(b.length * BYTE_LEN);
         for (byte aB : b)
         {
-            int v = aB
-                & 0xff;
-            if (v < 16)
+            int v = aB & 0xff;
+            if (v < HEX)
             {
                 sb.append('0');
             }
@@ -59,14 +59,11 @@ public final class SecurityUtils
 
     private static byte[] hexStringToByteArray(String s)
     {
-        byte[] b = new byte[s.length()
-            / 2];
+        byte[] b = new byte[s.length() / BYTE_LEN];
         for (int i = 0; i < b.length; i++)
         {
-            int index = i
-                * 2;
-            int v = Integer.parseInt(s.substring(index, index
-                + 2), 16);
+            int index = i * BYTE_LEN;
+            int v = Integer.parseInt(s.substring(index, index + BYTE_LEN), HEX);
             b[i] = (byte) v;
         }
         return b;

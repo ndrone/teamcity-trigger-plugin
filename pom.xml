@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ndrone</groupId>
     <artifactId>teamcity-trigger-plugin</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
 
     <organization>
         <name>Nicholas Drone</name>
@@ -214,6 +214,14 @@
                         </dependency>
                     </scannedDependencies>
                     <verbose>false</verbose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

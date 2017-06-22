@@ -1,11 +1,13 @@
 package org.ndrone.api;
 
+import com.atlassian.bitbucket.repository.RepositoryService;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import org.ndrone.Utils;
 import org.ndrone.api.service.TeamCityService;
 import org.springframework.http.*;
+import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,26 +26,39 @@ import javax.ws.rs.core.Response;
 @Scanned
 public class RestResource
 {
+    public static final String AUTH_URL_CHECK = "/httpAuth/app/rest/latest";
+    public static final String FETCH_BUILDTYPES_URL = "/httpAuth/app/rest/buildTypes";
+
     @ComponentImport
-    private final UserManager     userManager;
+    private final UserManager           userManager;
+    @ComponentImport
+    private final RepositoryService     repositoryService;
 
-    private final RestTemplate    restTemplate;
+    private final RestTemplate          restTemplate;
 
-    private final TeamCityService teamCityService;
+    private final TeamCityService       teamCityService;
+    private final UserValidationService userValidationService;
 
     @Inject
-    public RestResource(UserManager userManager, TeamCityService teamCityService)
+    public RestResource(UserManager userManager, RepositoryService repositoryService,
+        TeamCityService teamCityService, UserValidationService userValidationService)
     {
-        this.userManager = userManager;
-        this.teamCityService = teamCityService;
-        this.restTemplate = new RestTemplate();
+        this(userManager, repositoryService, teamCityService, userValidationService, new RestTemplate());
     }
 
-    public RestResource(UserManager userManager, TeamCityService teamCityService,
+    public RestResource(UserManager userManager, RepositoryService repositoryService,
+        TeamCityService teamCityService, UserValidationService userValidationService,
         RestTemplate restTemplate)
     {
+        Assert.notNull(userManager, "UserManager must not be null");
         this.userManager = userManager;
+        Assert.notNull(repositoryService, "RepositoryService must not be null");
+        this.repositoryService = repositoryService;
+        Assert.notNull(teamCityService, "TeamCityService must not be null");
         this.teamCityService = teamCityService;
+        Assert.notNull(userValidationService, "UserValidationService must not be null");
+        this.userValidationService = userValidationService;
+        Assert.notNull(restTemplate, "RestTemplate must not be null");
         this.restTemplate = restTemplate;
     }
 
@@ -53,7 +68,7 @@ public class RestResource
     public Response testConnection(final TeamCity teamCity)
     {
 
-        if (!Utils.validateUser(userManager))
+        if (!validateUser(teamCity))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -63,8 +78,8 @@ public class RestResource
         {
             ResponseEntity<String> response = restTemplate
                 .exchange(Utils.chopTrailingSlash(teamCity.getUrl())
-                    + "/httpAuth/app/rest/latest", HttpMethod.GET,
-                    new HttpEntity<Object>(Utils.createHeaders(teamCity.getUsername(),
+                    + AUTH_URL_CHECK, HttpMethod.GET,
+                    new HttpEntity<>(Utils.createHeaders(teamCity.getUsername(),
                         teamCityService.comparePassword(teamCity))),
                     String.class);
             statusCode = response.getStatusCode();
@@ -86,7 +101,7 @@ public class RestResource
     @Path("/save")
     public Response save(final TeamCity teamCity)
     {
-        if (!Utils.validateUser(userManager))
+        if (!validateUser(teamCity))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -107,7 +122,7 @@ public class RestResource
     @Path("/fetchBuilds")
     public Response fetchBuilds(final TeamCity teamCity)
     {
-        if (!Utils.validateUser(userManager))
+        if (!validateUser(teamCity))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -130,8 +145,8 @@ public class RestResource
         {
             ResponseEntity<BuildTypes> response = restTemplate
                 .exchange(Utils.chopTrailingSlash(teamCity.getUrl())
-                    + "/httpAuth/app/rest/buildTypes", HttpMethod.GET,
-                    new HttpEntity<Object>(headers), BuildTypes.class);
+                    + FETCH_BUILDTYPES_URL, HttpMethod.GET,
+                    new HttpEntity<>(headers), BuildTypes.class);
             statusCode = response.getStatusCode();
             buildTypes = response.getBody();
         }
@@ -149,12 +164,19 @@ public class RestResource
     @Path("/delete")
     public Response delete(final TeamCity teamCity)
     {
-        if (!Utils.validateUser(userManager))
+        if (!validateUser(teamCity))
         {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
         teamCityService.delete(teamCity);
         return Response.status(Response.Status.OK).build();
+    }
+
+    private boolean validateUser(final TeamCity teamCity)
+    {
+        return userValidationService.isUserRepositoryAdmin(userManager.getRemoteUser(),
+            repositoryService.getById(Integer.parseInt(teamCity.getId())));
+
     }
 }

@@ -5,6 +5,7 @@ import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import net.java.ao.DBParam;
 import net.java.ao.Query;
+import org.springframework.util.Assert;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,6 +23,7 @@ public class TeamCityTriggerConfigDao
     @Inject
     public TeamCityTriggerConfigDao(ActiveObjects activeObjects)
     {
+        Assert.notNull(activeObjects, "ActiveObjects must not be null");
         this.activeObjects = activeObjects;
     }
 

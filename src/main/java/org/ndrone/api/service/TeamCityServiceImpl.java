@@ -7,6 +7,7 @@ import org.ndrone.api.dao.TeamCityTriggerConfigDao;
 import org.ndrone.api.dao.TeamCityTriggerConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -26,6 +27,7 @@ public class TeamCityServiceImpl implements TeamCityService
     @Autowired
     public TeamCityServiceImpl(TeamCityTriggerConfigDao dao)
     {
+        Assert.notNull(dao, "TeamCityTriggerConfigDao must not be null");
         this.dao = dao;
     }
 
@@ -47,8 +49,7 @@ public class TeamCityServiceImpl implements TeamCityService
     public TeamCityTriggerConfiguration getConfiguration(Repository repository)
     {
         TeamCityTriggerConfiguration[] objects = dao.find(repository.getId());
-        return (objects.length == 0)
-            ? null : objects[0];
+        return (objects.length == 0) ? null : objects[0];
     }
 
     private TeamCity buildTeamCity(TeamCityTriggerConfiguration configuration)
