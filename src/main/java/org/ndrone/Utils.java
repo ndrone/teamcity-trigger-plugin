@@ -12,22 +12,22 @@ import com.atlassian.sal.core.util.Assert;
 public final class Utils
 {
 
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String BASIC = "Basic ";
+
     public static HttpHeaders createHeaders(final String username, final String password)
     {
         HttpHeaders headers = new HttpHeaders();
-        String auth = username
-            + ":" + password;
+        String auth = username + ":" + password;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
-        headers.set("Authorization", "Basic "
-            + new String(encodedAuth));
+        headers.set(AUTHORIZATION, BASIC + new String(encodedAuth));
         return headers;
     }
 
     public static String chopTrailingSlash(String url)
     {
         Assert.notNull(url);
-        if (url.substring(url.length()
-            - 1).equals("/"))
+        if (url.substring(url.length() - 1).equals("/"))
         {
             return StringUtils.chop(url);
         }

@@ -58,6 +58,4 @@ public class TeamCityTriggerConfigDaoTest
         save = dao.get(save.getID());
         Assert.assertNull(save);
     }
-
-
 }

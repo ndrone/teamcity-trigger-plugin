@@ -25,6 +25,9 @@ import javax.ws.rs.core.Response;
 @Scanned
 public class RestResource
 {
+    public static final String AUTH_URL_CHECK = "/httpAuth/app/rest/latest";
+    public static final String FETCH_BUILDTYPES_URL = "/httpAuth/app/rest/buildTypes";
+
     @ComponentImport
     private final UserManager           userManager;
     @ComponentImport
@@ -73,8 +76,8 @@ public class RestResource
         {
             ResponseEntity<String> response = restTemplate
                 .exchange(Utils.chopTrailingSlash(teamCity.getUrl())
-                    + "/httpAuth/app/rest/latest", HttpMethod.GET,
-                    new HttpEntity<Object>(Utils.createHeaders(teamCity.getUsername(),
+                    + AUTH_URL_CHECK, HttpMethod.GET,
+                    new HttpEntity<>(Utils.createHeaders(teamCity.getUsername(),
                         teamCityService.comparePassword(teamCity))),
                     String.class);
             statusCode = response.getStatusCode();
@@ -140,8 +143,8 @@ public class RestResource
         {
             ResponseEntity<BuildTypes> response = restTemplate
                 .exchange(Utils.chopTrailingSlash(teamCity.getUrl())
-                    + "/httpAuth/app/rest/buildTypes", HttpMethod.GET,
-                    new HttpEntity<Object>(headers), BuildTypes.class);
+                    + FETCH_BUILDTYPES_URL, HttpMethod.GET,
+                    new HttpEntity<>(headers), BuildTypes.class);
             statusCode = response.getStatusCode();
             buildTypes = response.getBody();
         }

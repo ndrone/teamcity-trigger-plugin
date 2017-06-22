@@ -47,8 +47,7 @@ public class TeamCityServiceImpl implements TeamCityService
     public TeamCityTriggerConfiguration getConfiguration(Repository repository)
     {
         TeamCityTriggerConfiguration[] objects = dao.find(repository.getId());
-        return (objects.length == 0)
-            ? null : objects[0];
+        return (objects.length == 0) ? null : objects[0];
     }
 
     private TeamCity buildTeamCity(TeamCityTriggerConfiguration configuration)

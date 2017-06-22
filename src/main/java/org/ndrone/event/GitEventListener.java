@@ -23,6 +23,11 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * @author Nicholas Drone on 5/5/17.
@@ -30,10 +35,17 @@ import java.security.NoSuchAlgorithmException;
 @Component
 public class GitEventListener
 {
-    private final Logger          log = LoggerFactory.getLogger(GitEventListener.class);
+    public static final String                  BUILD_QUEUE_URL    = "/httpAuth/app/rest/buildQueue";
 
-    private final TeamCityService teamCityService;
-    private final RestTemplate    restTemplate;
+    private static final Set<PullRequestAction> pullRequestActions = Collections
+        .unmodifiableSet(new HashSet<>(Arrays.asList(PullRequestAction.OPENED,
+            PullRequestAction.REOPENED, PullRequestAction.UPDATED)));
+
+    private final Logger                        log                = LoggerFactory
+        .getLogger(GitEventListener.class);
+
+    private final TeamCityService               teamCityService;
+    private final RestTemplate                  restTemplate;
 
     @Autowired
     public GitEventListener(TeamCityService teamCityService)
@@ -56,27 +68,22 @@ public class GitEventListener
         log.info("RepositoryRefsChangedEvent triggering");
         TeamCityTriggerConfiguration configuration = teamCityService
             .getConfiguration(event.getRepository());
-        if (configuration != null
-            && configuration.getBuildConfigId() != null)
+        if (isValidConfiguration(configuration))
         {
             HttpHeaders headers = getHttpHeaders(configuration);
 
-            for (RefChange refChange : event.getRefChanges())
-            {
-                log.info("Type: {} Reference id: {} displayId: {} typeChange: {}",
-                    refChange.getType().name(), refChange.getRef().getId(),
-                    refChange.getRef().getDisplayId(), refChange.getRef().getType().toString());
-
-                if (validForTrigger(refChange))
-                {
-                    log.info("Trigger a build");
-                    BuildType buildType = new BuildType(configuration.getBuildConfigId());
-                    Build build = new Build(refChange.getRef().getDisplayId(), buildType);
-                    queueBuild(configuration, headers, build);
-                }
-            }
-
+            event.getRefChanges().stream().filter(isValidForTrigger()).forEach(refChange -> {
+                log.info("Trigger a build");
+                queueBuild(configuration, headers, new Build(refChange.getRef().getDisplayId(),
+                    new BuildType(configuration.getBuildConfigId())));
+            });
         }
+    }
+
+    private boolean isValidConfiguration(TeamCityTriggerConfiguration configuration)
+    {
+        return configuration != null
+            && configuration.getBuildConfigId() != null;
     }
 
     @EventListener
@@ -87,15 +94,13 @@ public class GitEventListener
         log.info("PullRequestOpenedEvent triggering");
         TeamCityTriggerConfiguration configuration = teamCityService
             .getConfiguration(event.getPullRequest().getToRef().getRepository());
-        if (configuration != null
-            && configuration.getBuildConfigId() != null && validForTrigger(event))
+        if (isValidConfiguration(configuration)
+            && validForTrigger(event))
         {
             HttpHeaders headers = getHttpHeaders(configuration);
-
-            BuildType buildType = new BuildType(configuration.getBuildConfigId());
-            Build build = new Build("pull-requests/"
-                + event.getPullRequest().getId() + "/from", buildType);
-            queueBuild(configuration, headers, build);
+            queueBuild(configuration, headers, new Build("pull-requests/"
+                + event.getPullRequest().getId() + "/from",
+                new BuildType(configuration.getBuildConfigId())));
         }
     }
 
@@ -106,8 +111,8 @@ public class GitEventListener
         {
             ResponseEntity<String> exchange = restTemplate
                 .exchange(Utils.chopTrailingSlash(configuration.getUrl())
-                    + "/httpAuth/app/rest/buildQueue", HttpMethod.POST,
-                    new HttpEntity<Build>(build, headers), String.class);
+                    + BUILD_QUEUE_URL, HttpMethod.POST, new HttpEntity<>(build, headers),
+                    String.class);
 
             if (!exchange.getStatusCode().is2xxSuccessful())
             {
@@ -133,17 +138,15 @@ public class GitEventListener
         return headers;
     }
 
-    private boolean validForTrigger(RefChange refChange)
+    private static Predicate<RefChange> isValidForTrigger()
     {
-        return RefChangeType.UPDATE.equals(refChange.getType())
+        return refChange -> RefChangeType.UPDATE.equals(refChange.getType())
             && "BRANCH".equals(refChange.getRef().getType().toString());
     }
 
     private boolean validForTrigger(PullRequestEvent event)
     {
         return event.getPullRequest().getId() > 0
-            && (PullRequestAction.OPENED.equals(event.getAction())
-                || PullRequestAction.REOPENED.equals(event.getAction())
-                || PullRequestAction.UPDATED.equals(event.getAction()));
+            && pullRequestActions.contains(event.getAction());
     }
 }

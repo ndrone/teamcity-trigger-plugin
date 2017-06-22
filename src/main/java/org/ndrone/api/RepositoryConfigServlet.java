@@ -47,7 +47,7 @@ public class RepositoryConfigServlet extends HttpServlet
         throws ServletException, IOException
     {
         resp.setContentType("text/html;charset=utf-8");
-        Map<String, Object> contextMap = new HashMap<String, Object>();
+        Map<String, Object> contextMap = new HashMap<>();
 
         Repository repository = getRepository(req);
         if (repository == null)
@@ -69,7 +69,6 @@ public class RepositoryConfigServlet extends HttpServlet
             contextMap.put("teamcity", teamCityService.find(repository));
             renderer.render("trigger.vm", contextMap, resp.getWriter());
         }
-
     }
 
     private Repository getRepository(HttpServletRequest req) throws IOException

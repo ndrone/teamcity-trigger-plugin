@@ -23,14 +23,14 @@ public class UtilsTest
         Assert.assertNotNull(headers);
         Assert.assertEquals(1, headers.size());
 
-        List<String> authorization = headers.get("Authorization");
+        List<String> authorization = headers.get(Utils.AUTHORIZATION);
         Assert.assertNotNull(authorization);
         Assert.assertEquals(1, authorization.size());
 
         String value = authorization.get(0);
         Assert.assertNotNull(value);
-        Assert.assertTrue(value.startsWith("Basic "));
-        Assert.assertTrue(value.length() > 6);
+        Assert.assertTrue(value.startsWith(Utils.BASIC));
+        Assert.assertTrue(value.length() > Utils.BASIC.length());
     }
 
     @Test(expected = IllegalArgumentException.class)

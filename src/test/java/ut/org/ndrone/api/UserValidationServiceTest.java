@@ -21,6 +21,8 @@ import com.atlassian.sal.api.user.UserProfile;
 @RunWith(MockitoJUnitRunner.class)
 public class UserValidationServiceTest
 {
+    private static final String   USERNAME          = "test";
+
     private UserValidationService userValidationService;
 
     private UserService           userService       = Mockito.mock(UserService.class);
@@ -78,7 +80,7 @@ public class UserValidationServiceTest
         setupValid(true);
 
         Assert.assertTrue("Should be true", userValidationService
-                .isUserRepositoryAdmin(getUserProfile(), Mockito.mock(Repository.class)));
+            .isUserRepositoryAdmin(getUserProfile(), Mockito.mock(Repository.class)));
 
         verifyInteraction(1);
     }
@@ -93,13 +95,13 @@ public class UserValidationServiceTest
     private UserProfile getUserProfile()
     {
         UserProfile userProfile = Mockito.mock(UserProfile.class);
-        Mockito.when(userProfile.getUsername()).thenReturn("test");
+        Mockito.when(userProfile.getUsername()).thenReturn(USERNAME);
         return userProfile;
     }
 
     private void setupValid(boolean value)
     {
-        Mockito.when(userService.getUserByName(Mockito.eq("test")))
+        Mockito.when(userService.getUserByName(Mockito.eq(USERNAME)))
             .thenReturn(Mockito.mock(ApplicationUser.class));
         Mockito.when(permissionService.hasRepositoryPermission(Mockito.any(ApplicationUser.class),
             Mockito.any(Repository.class), Mockito.eq(Permission.ADMIN))).thenReturn(value);
