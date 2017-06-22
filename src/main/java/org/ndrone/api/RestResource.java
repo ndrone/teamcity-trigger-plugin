@@ -7,6 +7,7 @@ import com.atlassian.sal.api.user.UserManager;
 import org.ndrone.Utils;
 import org.ndrone.api.service.TeamCityService;
 import org.springframework.http.*;
+import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,21 +43,22 @@ public class RestResource
     public RestResource(UserManager userManager, RepositoryService repositoryService,
         TeamCityService teamCityService, UserValidationService userValidationService)
     {
-        this.userManager = userManager;
-        this.repositoryService = repositoryService;
-        this.teamCityService = teamCityService;
-        this.userValidationService = userValidationService;
-        this.restTemplate = new RestTemplate();
+        this(userManager, repositoryService, teamCityService, userValidationService, new RestTemplate());
     }
 
     public RestResource(UserManager userManager, RepositoryService repositoryService,
         TeamCityService teamCityService, UserValidationService userValidationService,
         RestTemplate restTemplate)
     {
+        Assert.notNull(userManager, "UserManager must not be null");
         this.userManager = userManager;
+        Assert.notNull(repositoryService, "RepositoryService must not be null");
         this.repositoryService = repositoryService;
+        Assert.notNull(teamCityService, "TeamCityService must not be null");
         this.teamCityService = teamCityService;
+        Assert.notNull(userValidationService, "UserValidationService must not be null");
         this.userValidationService = userValidationService;
+        Assert.notNull(restTemplate, "RestTemplate must not be null");
         this.restTemplate = restTemplate;
     }
 

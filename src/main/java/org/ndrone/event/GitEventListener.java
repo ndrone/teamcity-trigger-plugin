@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -50,13 +51,14 @@ public class GitEventListener
     @Autowired
     public GitEventListener(TeamCityService teamCityService)
     {
-        this.teamCityService = teamCityService;
-        this.restTemplate = new RestTemplate();
+        this(teamCityService, new RestTemplate());
     }
 
     public GitEventListener(TeamCityService teamCityService, RestTemplate restTemplate)
     {
+        Assert.notNull(teamCityService, "TeamCityService must not be null");
         this.teamCityService = teamCityService;
+        Assert.notNull(restTemplate, "RestTemplate must not be null");
         this.restTemplate = restTemplate;
     }
 

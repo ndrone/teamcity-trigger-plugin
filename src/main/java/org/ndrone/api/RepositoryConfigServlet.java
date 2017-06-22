@@ -8,6 +8,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import org.ndrone.api.service.TeamCityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,10 +36,15 @@ public class RepositoryConfigServlet extends HttpServlet
         @ComponentImport TemplateRenderer renderer, TeamCityService teamCityService,
         UserValidationService userValidationService)
     {
+        Assert.notNull(userManager, "UserManager must not be null");
         this.userManager = userManager;
+        Assert.notNull(repositoryService, "RepositoryService must not be null");
         this.repositoryService = repositoryService;
+        Assert.notNull(renderer, "TemplateRenderer must not be null");
         this.renderer = renderer;
+        Assert.notNull(teamCityService, "TeamCityService must not be null");
         this.teamCityService = teamCityService;
+        Assert.notNull(userValidationService, "UserValidationService must not be null");
         this.userValidationService = userValidationService;
     }
 

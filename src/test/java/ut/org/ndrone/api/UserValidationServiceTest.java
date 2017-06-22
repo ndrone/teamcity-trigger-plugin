@@ -36,7 +36,7 @@ public class UserValidationServiceTest
         userValidationService = new UserValidationService(userService, permissionService);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void nullArgs()
     {
         Assert.assertFalse("Should be false with null params",
@@ -45,7 +45,7 @@ public class UserValidationServiceTest
         verifyInteraction(0);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void userProfileNull()
     {
         Assert.assertFalse("Should be false with userProfile null",
@@ -54,7 +54,7 @@ public class UserValidationServiceTest
         verifyInteraction(0);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void RepositoryNull()
     {
         Assert.assertFalse("Should be false with repository null",
@@ -89,7 +89,7 @@ public class UserValidationServiceTest
     {
         Mockito.verify(permissionService, Mockito.times(wantedNumberOfInvocations))
             .hasRepositoryPermission(Mockito.any(ApplicationUser.class),
-                Mockito.any(Repository.class), Mockito.eq(Permission.ADMIN));
+                Mockito.any(Repository.class), Mockito.eq(Permission.REPO_ADMIN));
     }
 
     private UserProfile getUserProfile()
@@ -104,6 +104,6 @@ public class UserValidationServiceTest
         Mockito.when(userService.getUserByName(Mockito.eq(USERNAME)))
             .thenReturn(Mockito.mock(ApplicationUser.class));
         Mockito.when(permissionService.hasRepositoryPermission(Mockito.any(ApplicationUser.class),
-            Mockito.any(Repository.class), Mockito.eq(Permission.ADMIN))).thenReturn(value);
+            Mockito.any(Repository.class), Mockito.eq(Permission.REPO_ADMIN))).thenReturn(value);
     }
 }
